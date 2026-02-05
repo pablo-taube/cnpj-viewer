@@ -2,15 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<title>Consulta Interna de CNPJ</title>
-=======
 <title>Consulta Interna de CNPJs</title>
->>>>>>> Stashed changes
-=======
-<title>Consulta Interna de CNPJs</title>
->>>>>>> Stashed changes
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="./office-building.png">
 
@@ -18,14 +10,7 @@
 <style>
 :root {
     --app-bg: #F2F2F7;
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
     /* Adicionado gradiente e propriedades visuais do anterior */
->>>>>>> Stashed changes
-=======
-    /* Adicionado gradiente e propriedades visuais do anterior */
->>>>>>> Stashed changes
     --app-gradient: radial-gradient(circle at 50% 0, #dbeafe 0%, transparent 75%);
     --card-bg: rgba(255, 255, 255, 0.92);
     --header-bg: rgba(242, 242, 247, 0.85);
@@ -35,14 +20,7 @@
     --separator: rgba(60, 60, 67, 0.18);
     --card-border: rgba(255, 255, 255, 0.9);
     --shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
     /* Recuperadas as cores de disclaimer/warning */
->>>>>>> Stashed changes
-=======
-    /* Recuperadas as cores de disclaimer/warning */
->>>>>>> Stashed changes
     --warning-bg: rgba(255, 149, 0, 0.1);
     --warning-text: #FF9500;
     --error: #FF3B30;
@@ -62,32 +40,14 @@
 * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
 
 body {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    margin: 0;
-=======
     margin: 0; 
->>>>>>> Stashed changes
-=======
-    margin: 0; 
->>>>>>> Stashed changes
     font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", sans-serif;
     background: var(--app-bg);
     background-image: var(--app-gradient);
     background-attachment: fixed;
     color: var(--text-primary);
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    display: flex;
-    flex-direction: column;
-=======
     display: flex; 
     flex-direction: column; 
->>>>>>> Stashed changes
-=======
-    display: flex; 
-    flex-direction: column; 
->>>>>>> Stashed changes
     min-height: 100vh;
 }
 
@@ -98,28 +58,6 @@ header {
     backdrop-filter: blur(20px) saturate(180%); border-bottom: 0.5px solid var(--separator);
 }
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-header h1 { grid-column: 2; font-size: 22px; font-weight: 600; margin: 0; text-align: center; }
-
-.theme-toggle {
-    background: rgba(128, 128, 128, 0.15) !important;
-    border: 1px solid var(--separator) !important;
-    width: 36px; height: 36px;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 10px !important;
-    font-size: 18px !important;
-=======
-main { max-width: 98%; margin: 24px auto; padding: 0 20px; flex: 1; width: 100%; }
-
-/* Disclaimer Ajustado para compatibilidade */
-.disclaimer-card {
-    background-color: var(--warning-bg); 
-    border-left: 4px solid var(--warning-text);
-    padding: 16px 20px; 
-    border-radius: 12px; 
-    margin-bottom: 20px;
-=======
 main { max-width: 98%; margin: 24px auto; padding: 0 20px; flex: 1; width: 100%; }
 
 /* Disclaimer Ajustado para compatibilidade */
@@ -149,28 +87,6 @@ main { max-width: 98%; margin: 24px auto; padding: 0 20px; flex: 1; width: 100%;
     padding: 24px; 
     position: relative; 
     overflow: hidden;
->>>>>>> Stashed changes
-}
-
-.disclaimer-card span { 
-    display: block; 
-    font-size: 11px; 
-    font-weight: 700; 
-    text-transform: uppercase; 
-    color: var(--warning-text); 
-    margin-bottom: 4px; 
-}
-
-.card {
-    background: var(--card-bg); 
-    backdrop-filter: blur(40px);
-    border: 1px solid var(--card-border); 
-    border-radius: 20px;
-    box-shadow: var(--shadow); 
-    padding: 24px; 
-    position: relative; 
-    overflow: hidden;
->>>>>>> Stashed changes
 }
 
 header button {
@@ -225,8 +141,6 @@ footer {
     padding: 24px; text-align: center; font-size: 12px;
     color: var(--text-secondary); border-top: 0.5px solid var(--separator);
 }
-<<<<<<< Updated upstream
-=======
 
 table { 
     width: 100%; 
@@ -274,59 +188,26 @@ footer {
     padding: 24px; text-align: center; font-size: 12px; 
     color: var(--text-secondary); border-top: 0.5px solid var(--separator);
 }
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 </style>
 </head>
 
 <body>
 
 <header>
-<<<<<<< Updated upstream
-    <div class="header-left">
-        <button class="theme-toggle" onclick="toggleTheme()" title="Trocar Tema">☾</button>
-    </div>
-    <h1>Consulta Interna de CNPJ</h1>
-    <div class="header-actions">
-        <button id="exportarBtn" onclick="exportarExcel()">Exportar</button>
-    </div>
-=======
     <button onclick="document.body.classList.toggle('dark-mode')" style="background:none; border:none; cursor:pointer;">☾</button>
     <h1 style="font-size: 16px; margin: 0;">Consulta Interna de CNPJs</h1>
     <button id="exportarBtn" onclick="exportarExcel()" style="background:none; border:none; color:var(--accent-color); font-weight:600; cursor:pointer;" disabled>Exportar em Excel</button>
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 </header>
 
 <main>
     <div class="disclaimer-card">
         <span>⚠️ Aviso de Confidencialidade</span>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        <p>Este site deve ser utilizado apenas internamente no âmbito da UNIDES, não devendo ser compartilhado. <br> Os dados são de responsabilidade da <a href="https://receitaws.com.br/">ReceitaWS</a> e levam cerca de 21 segundos por item.</p>
-    </div>
-
-    <div class="card">
-        <div class="progress-bar-bg"><div id="progress-bar-fill"></div></div>
-        <textarea id="listaCNPJs" placeholder="Cole os CNPJs aqui..."></textarea>
-        <button id="btnConsultar" class="main-btn" onclick="iniciarFila()">Consultar em Lote</button>
-=======
-=======
->>>>>>> Stashed changes
         <p>- Este site deve ser utilizado apenas internamente no âmbito da UNIDES, não devendo ser compartilhado. <br> - Os dados são de responsabilidade da <a href="https://receitaws.com.br/">ReceitaWS</a> e levam cerca de 21 segundos por item. <br> - A classificação de setores é baseada na lista disponibilizada pelo IBGE..</p>
     </div>
     
     <div class="card">
         <textarea id="listaCNPJs" placeholder="Insira os CNPJs aqui..."></textarea>
         <button id="btnConsultar" class="main-btn" onclick="iniciarFila()">Processar CNPJs</button>
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
         
         <div id="status-container">
             <div id="timer-text">Tempo restante estimado: <span id="tempo-restante">--:--</span></div>
@@ -366,19 +247,6 @@ const INTERVALO = 21000;
 let fila = [];
 let totalInicial = 0;
 
-<<<<<<< Updated upstream
-function toggleTheme() {
-    const body = document.body;
-    const btn = document.querySelector('.theme-toggle');
-    if (body.getAttribute('data-theme') === 'dark') {
-        body.removeAttribute('data-theme');
-        btn.textContent = '☾';
-    } else {
-        body.setAttribute('data-theme', 'dark');
-        btn.textContent = '☀';
-    }
-}
-=======
 const SECOES = {
     'A': { n: 'Agricultura e Pecuária', c: '#2E7D32' }, 
     'B': { n: 'Indústria Extrativas', c: '#4E342E' },
@@ -402,7 +270,6 @@ const SECOES = {
     'T': { n: 'Serviços Domésticos.', c: '#000000' },
     'U': { n: 'Organismos Internacionais.', c: '#3E2723' }
 };
->>>>>>> Stashed changes
 
 function formatarTempo(ms) {
     const totalSegundos = Math.floor(ms / 1000);
