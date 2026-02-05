@@ -55,7 +55,7 @@ header h1 { grid-column: 2; font-size: 16px; font-weight: 600; margin: 0; text-a
 
 header button { background: none; border: none; color: var(--accent-color); font-size: 15px; cursor: pointer; padding: 8px; border-radius: 8px; }
 
-main { max-width: 1200px; margin: 24px auto; padding: 0 20px; }
+main { max-width: 1400px; margin: 24px auto; padding: 0 20px; }
 
 .disclaimer-card {
     background-color: var(--warning-bg); border-left: 4px solid var(--warning-text);
@@ -89,10 +89,12 @@ textarea {
 
 .table-wrapper { overflow-x: auto; margin-top: 24px; }
 table { width: 100%; border-collapse: collapse; font-size: 11px; }
-th { text-align: left; padding: 10px; color: var(--text-secondary); text-transform: uppercase; border-bottom: 1px solid var(--separator); }
+th { text-align: left; padding: 10px; color: var(--text-secondary); text-transform: uppercase; border-bottom: 1px solid var(--separator); white-space: nowrap; }
 td { padding: 10px; border-bottom: 0.5px solid var(--separator); vertical-align: top; }
-.truncate { max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.truncate { max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: help; }
 .ok { color: var(--success); font-weight: 600; }
+.bold { font-weight: 600; }
 </style>
 </head>
 
@@ -106,13 +108,13 @@ td { padding: 10px; border-bottom: 0.5px solid var(--separator); vertical-align:
 
 <main>
     <div class="disclaimer-card">
-        <span>⚠️ Uso Restrito</span>
-        <p>Este site deve ser utilizado apenas internamento no âmbito da UNIDES, não devendo ser compartilhado. <BR> Os dados são de responsabilidade da <a href="https://receitaws.com.br/">ReceitaWS</a></p>
+        <span>⚠️ Aviso de Confidencialidade</span>
+        <p>Este site deve ser utilizado apenas internamento no âmbito da UNIDES, não devendo ser compartilhado. <br> Os dados são de responsabilidade da <a href="https://receitaws.com.br/">ReceitaWS</a> e levam cerca de 21 segundos por item.</p>
     </div>
 
     <div class="card">
         <div class="progress-bar-bg"><div id="progress-bar-fill"></div></div>
-        <textarea id="listaCNPJs" placeholder="Cole os CNPJs (um por linha)..."></textarea>
+        <textarea id="listaCNPJs" placeholder="Insira os CNPJs (um por linha)..."></textarea>
         <button id="btnConsultar" class="main-btn" onclick="iniciarFila()">Consultar em Lote</button>
         
         <div id="status-container">
@@ -123,7 +125,16 @@ td { padding: 10px; border-bottom: 0.5px solid var(--separator); vertical-align:
             <table id="tabela">
                 <thead>
                     <tr>
-                        <th>CNPJ</th><th>Razão Social</th><th>Situação</th><th>Porte</th><th>Atividade</th><th>Sócios</th><th>Localização</th><th>Contatos</th>
+                        <th>CNPJ</th>
+                        <th>Nome Empresarial</th>
+                        <th>Nome Fantasia</th>
+                        <th>Situação</th>
+                        <th>CNAE Principal</th>
+                        <th>CNAE Secundários</th>
+                        <th>Município/UF</th>
+                        <th>Sócio Responsável</th>
+                        <th>Contatos</th>
+                        <th>Abertura</th>
                     </tr>
                 </thead>
                 <tbody id="resultado"></tbody>
@@ -170,21 +181,16 @@ function atualizarProgresso() {
     const faltam = fila.length;
     const processados = totalInicial - faltam;
     const porcentagem = (processados / totalInicial) * 100;
-    
     document.getElementById("progress-bar-fill").style.width = `${porcentagem}%`;
-    
-    // Tempo estimado = itens na fila * intervalo
     const tempoEstimadoMs = faltam * INTERVALO;
-    document.getElementById("tempo-restante").innerText = faltam > 0 ? formatarTempo(tempoEstimadoMs) : "Finalizando...";
+    document.getElementById("tempo-restante").innerText = faltam > 0 ? formatarTempo(tempoEstimadoMs) : "Concluído!";
 }
 
 function consultarProximo() {
     if (!fila.length) {
         document.getElementById("exportarBtn").style.display = "block";
-        document.getElementById("tempo-restante").innerText = "Concluído!";
         document.getElementById("btnConsultar").disabled = false;
         document.getElementById("btnConsultar").style.opacity = "1";
-        document.getElementById("progress-bar-fill").style.width = `100%`;
         return;
     }
 
@@ -193,25 +199,31 @@ function consultarProximo() {
 
     const tr = document.createElement("tr");
     tr.id = `row-${cnpj}`;
-    tr.innerHTML = `<td colspan="8" style="color:var(--text-secondary); text-align:center; padding:15px;">Consultando ${cnpj}...</td>`;
-    document.getElementById("resultado").prepend(tr); // Adiciona no topo para facilitar visualização
+    tr.innerHTML = `<td colspan="10" style="color:var(--text-secondary); text-align:center; padding:15px;">Aguardando retorno para ${cnpj}...</td>`;
+    document.getElementById("resultado").prepend(tr);
 
     const cb = "cb_" + Math.random().toString(36).substr(2, 9);
     window[cb] = data => {
         const row = document.getElementById(`row-${cnpj}`);
         if (data.status === "OK") {
-            const socios = data.qsa?.map(s => s.nome).join(", ") || "-";
+            const principal = `${data.atividade_principal[0].code} - ${data.atividade_principal[0].text}`;
+            const secundarias = data.atividades_secundarias?.map(a => `${a.code} - ${a.text}`).join(" | ") || "-";
+            const socios = data.qsa?.map(s => s.nome).join(", ") || "Não informado";
+            const contato = `${data.email || ""} ${data.telefone || ""}`.trim() || "-";
+
             row.innerHTML = `
-                <td><b>${data.cnpj}</b></td>
+                <td class="bold">${data.cnpj}</td>
                 <td>${data.nome}</td>
+                <td>${data.fantasia || "-"}</td>
                 <td class="ok">${data.situacao}</td>
-                <td>${data.porte}</td>
-                <td class="truncate" title="${data.atividade_principal[0].text}">${data.atividade_principal[0].text}</td>
-                <td class="truncate" title="${socios}">${socios}</td>
+                <td class="truncate" title="${principal}">${principal}</td>
+                <td class="truncate" title="${secundarias}">${secundarias}</td>
                 <td>${data.municipio}/${data.uf}</td>
-                <td>${data.email || data.telefone}</td>`;
+                <td class="truncate" title="${socios}">${socios}</td>
+                <td>${contato}</td>
+                <td>${data.abertura}</td>`;
         } else {
-            row.innerHTML = `<td colspan="8" style="color:var(--error)">Erro no CNPJ ${cnpj} (Aguardando intervalo)</td>`;
+            row.innerHTML = `<td colspan="10" style="color:var(--error)">Falha na consulta do CNPJ ${cnpj}</td>`;
         }
         setTimeout(consultarProximo, INTERVALO);
     };
@@ -230,7 +242,7 @@ function exportarExcel() {
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `consulta_pnce_to_${new Date().getTime()}.csv`;
+    a.download = `pnce_export_${new Date().toLocaleDateString().replace(/\//g,'-')}.csv`;
     a.click();
 }
 </script>
