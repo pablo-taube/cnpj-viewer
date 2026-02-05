@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>Consulta Interna de CNPJ</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="./office-building.png">
+
 
 <style>
 :root {
@@ -54,9 +56,8 @@ header {
     backdrop-filter: blur(20px) saturate(180%); border-bottom: 0.5px solid var(--separator);
 }
 
-header h1 { grid-column: 2; font-size: 16px; font-weight: 600; margin: 0; text-align: center; }
+header h1 { grid-column: 2; font-size: 22px; font-weight: 600; margin: 0; text-align: center; }
 
-/* Botão de Tema mais visível */
 .theme-toggle {
     background: rgba(128, 128, 128, 0.15) !important;
     border: 1px solid var(--separator) !important;
@@ -73,7 +74,7 @@ header button {
 
 header button:disabled { opacity: 0.3; cursor: not-allowed; }
 
-main { max-width: 1400px; margin: 24px auto; padding: 0 20px; flex: 1; width: 100%; }
+main { max-width: 1550px; margin: 24px auto; padding: 0 20px; flex: 1; width: 100%; }
 
 .disclaimer-card {
     background-color: var(--warning-bg); border-left: 4px solid var(--warning-text);
@@ -105,11 +106,11 @@ textarea {
 }
 
 .table-wrapper { overflow-x: auto; margin-top: 24px; }
-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+table { width: 100%; border-collapse: collapse; font-size: 10px; }
 th { text-align: left; padding: 10px; color: var(--text-secondary); text-transform: uppercase; border-bottom: 1px solid var(--separator); white-space: nowrap; }
 td { padding: 10px; border-bottom: 0.5px solid var(--separator); vertical-align: top; }
 
-.truncate { max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: help; }
+.truncate { max-width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: help; }
 .ok { color: var(--success); font-weight: 600; }
 .bold { font-weight: 600; }
 
@@ -134,8 +135,8 @@ footer {
 
 <main>
     <div class="disclaimer-card">
-        <span>Aviso de Confidencialidade</span>
-        <p>Este site deve ser utilizado apenas internamento no âmbito da UNIDES, não devendo ser compartilhado. <br> Os dados são de responsabilidade da <a href="https://receitaws.com.br/">ReceitaWS</a> e levam cerca de 21 segundos por item.</p>
+        <span>⚠️ Aviso de Confidencialidade</span>
+        <p>Este site deve ser utilizado apenas internamente no âmbito da UNIDES, não devendo ser compartilhado. <br> Os dados são de responsabilidade da <a href="https://receitaws.com.br/">ReceitaWS</a> e levam cerca de 21 segundos por item.</p>
     </div>
 
     <div class="card">
@@ -158,9 +159,12 @@ footer {
                         <th>CNAE Principal</th>
                         <th>CNAE Secundários</th>
                         <th>Município/UF</th>
-                        <th>Sócio Responsável</th>
-                        <th>Contatos</th>
+                        <th>Sócio Resp.</th>
+                        <th>E-mail</th>
+                        <th>Telefone</th>
                         <th>Abertura</th>
+                        <th>Última Atualiz.</th>
+                        <th>Billing</th>
                     </tr>
                 </thead>
                 <tbody id="resultado"></tbody>
@@ -237,7 +241,7 @@ function consultarProximo() {
 
     const tr = document.createElement("tr");
     tr.id = `row-${cnpj}`;
-    tr.innerHTML = `<td colspan="10" style="color:var(--text-secondary); text-align:center; padding:15px;">Processando ${cnpj}...</td>`;
+    tr.innerHTML = `<td colspan="13" style="color:var(--text-secondary); text-align:center; padding:15px;">Processando ${cnpj}...</td>`;
     document.getElementById("resultado").prepend(tr);
 
     const cb = "cb_" + Math.random().toString(36).substr(2, 9);
@@ -247,7 +251,14 @@ function consultarProximo() {
             const principal = `${data.atividade_principal[0].code} - ${data.atividade_principal[0].text}`;
             const secundarias = data.atividades_secundarias?.map(a => `${a.code} - ${a.text}`).join(" | ") || "-";
             const socios = data.qsa?.map(s => s.nome).join(", ") || "Não informado";
-            const contato = `${data.email || ""} | ${data.telefone || ""}`.trim();
+            
+            // Tratamento da data
+            const ultimaAtu = data.ultima_atualizacao ? new Date(data.ultima_atualizacao).toLocaleDateString('pt-BR') : "-";
+            
+            // Tratamento do Billing conforme parâmetros solicitados
+            const bFree = data.billing?.free ? "Grátis" : "Paga";
+            const bDb = data.billing?.database ? "Base" : "Cache";
+            const billingStr = `${bFree} | ${bDb}`;
 
             row.innerHTML = `
                 <td class="bold">${data.cnpj}</td>
@@ -258,10 +269,13 @@ function consultarProximo() {
                 <td class="truncate" title="${secundarias}">${secundarias}</td>
                 <td>${data.municipio}/${data.uf}</td>
                 <td class="truncate" title="${socios}">${socios}</td>
-                <td>${contato}</td>
-                <td>${data.abertura}</td>`;
+                <td>${data.email || "-"}</td>
+                <td>${data.telefone || "-"}</td>
+                <td>${data.abertura}</td>
+                <td>${ultimaAtu}</td>
+                <td>${billingStr}</td>`;
         } else {
-            row.innerHTML = `<td colspan="10" style="color:var(--error)">Erro no CNPJ ${cnpj} (Aguardando intervalo)</td>`;
+            row.innerHTML = `<td colspan="13" style="color:var(--error)">Erro no CNPJ ${cnpj} (Aguardando intervalo)</td>`;
         }
         setTimeout(consultarProximo, INTERVALO);
     };
