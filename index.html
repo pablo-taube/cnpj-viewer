@@ -95,6 +95,17 @@ td { padding: 10px; border-bottom: 0.5px solid var(--separator); vertical-align:
 .truncate { max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: help; }
 .ok { color: var(--success); font-weight: 600; }
 .bold { font-weight: 600; }
+
+footer {
+    padding: 32px 20px;
+    text-align: center;
+    border-top: 0.5px solid var(--separator);
+    font-size: 13px;
+    color: var(--text-secondary);
+    background-color: var(--header-bg);
+}
+
+footer strong { color: var(--text-primary); font-weight: 500; }
 </style>
 </head>
 
@@ -142,6 +153,10 @@ td { padding: 10px; border-bottom: 0.5px solid var(--separator); vertical-align:
         </div>
     </div>
 </main>
+
+<footer>
+    Desenvolvido por <strong>Pablo Taube</strong>. <br> Dados fornecidos por <a href="https://receitaws.com.br/">ReceitaWS</a>.
+</footer>
 
 <script>
 const INTERVALO = 21000;
