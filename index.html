@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <title>Consulta Interna de CNPJ</title>
+=======
+<title>Consulta Interna de CNPJs</title>
+>>>>>>> Stashed changes
 =======
 <title>Consulta Interna de CNPJs</title>
 >>>>>>> Stashed changes
@@ -15,6 +19,10 @@
 :root {
     --app-bg: #F2F2F7;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+    /* Adicionado gradiente e propriedades visuais do anterior */
+>>>>>>> Stashed changes
 =======
     /* Adicionado gradiente e propriedades visuais do anterior */
 >>>>>>> Stashed changes
@@ -28,6 +36,10 @@
     --card-border: rgba(255, 255, 255, 0.9);
     --shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+    /* Recuperadas as cores de disclaimer/warning */
+>>>>>>> Stashed changes
 =======
     /* Recuperadas as cores de disclaimer/warning */
 >>>>>>> Stashed changes
@@ -51,7 +63,11 @@
 
 body {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     margin: 0;
+=======
+    margin: 0; 
+>>>>>>> Stashed changes
 =======
     margin: 0; 
 >>>>>>> Stashed changes
@@ -61,8 +77,13 @@ body {
     background-attachment: fixed;
     color: var(--text-primary);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     display: flex;
     flex-direction: column;
+=======
+    display: flex; 
+    flex-direction: column; 
+>>>>>>> Stashed changes
 =======
     display: flex; 
     flex-direction: column; 
@@ -77,6 +98,7 @@ header {
     backdrop-filter: blur(20px) saturate(180%); border-bottom: 0.5px solid var(--separator);
 }
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 header h1 { grid-column: 2; font-size: 22px; font-weight: 600; margin: 0; text-align: center; }
 
@@ -97,6 +119,37 @@ main { max-width: 98%; margin: 24px auto; padding: 0 20px; flex: 1; width: 100%;
     padding: 16px 20px; 
     border-radius: 12px; 
     margin-bottom: 20px;
+=======
+main { max-width: 98%; margin: 24px auto; padding: 0 20px; flex: 1; width: 100%; }
+
+/* Disclaimer Ajustado para compatibilidade */
+.disclaimer-card {
+    background-color: var(--warning-bg); 
+    border-left: 4px solid var(--warning-text);
+    padding: 16px 20px; 
+    border-radius: 12px; 
+    margin-bottom: 20px;
+}
+
+.disclaimer-card span { 
+    display: block; 
+    font-size: 11px; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    color: var(--warning-text); 
+    margin-bottom: 4px; 
+}
+
+.card {
+    background: var(--card-bg); 
+    backdrop-filter: blur(40px);
+    border: 1px solid var(--card-border); 
+    border-radius: 20px;
+    box-shadow: var(--shadow); 
+    padding: 24px; 
+    position: relative; 
+    overflow: hidden;
+>>>>>>> Stashed changes
 }
 
 .disclaimer-card span { 
@@ -221,6 +274,9 @@ footer {
     padding: 24px; text-align: center; font-size: 12px; 
     color: var(--text-secondary); border-top: 0.5px solid var(--separator);
 }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 </style>
 </head>
@@ -240,12 +296,16 @@ footer {
     <button onclick="document.body.classList.toggle('dark-mode')" style="background:none; border:none; cursor:pointer;">☾</button>
     <h1 style="font-size: 16px; margin: 0;">Consulta Interna de CNPJs</h1>
     <button id="exportarBtn" onclick="exportarExcel()" style="background:none; border:none; color:var(--accent-color); font-weight:600; cursor:pointer;" disabled>Exportar em Excel</button>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 </header>
 
 <main>
     <div class="disclaimer-card">
         <span>⚠️ Aviso de Confidencialidade</span>
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
         <p>Este site deve ser utilizado apenas internamente no âmbito da UNIDES, não devendo ser compartilhado. <br> Os dados são de responsabilidade da <a href="https://receitaws.com.br/">ReceitaWS</a> e levam cerca de 21 segundos por item.</p>
     </div>
@@ -255,12 +315,17 @@ footer {
         <textarea id="listaCNPJs" placeholder="Cole os CNPJs aqui..."></textarea>
         <button id="btnConsultar" class="main-btn" onclick="iniciarFila()">Consultar em Lote</button>
 =======
+=======
+>>>>>>> Stashed changes
         <p>- Este site deve ser utilizado apenas internamente no âmbito da UNIDES, não devendo ser compartilhado. <br> - Os dados são de responsabilidade da <a href="https://receitaws.com.br/">ReceitaWS</a> e levam cerca de 21 segundos por item. <br> - A classificação de setores é baseada na lista disponibilizada pelo IBGE..</p>
     </div>
     
     <div class="card">
         <textarea id="listaCNPJs" placeholder="Insira os CNPJs aqui..."></textarea>
         <button id="btnConsultar" class="main-btn" onclick="iniciarFila()">Processar CNPJs</button>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         
         <div id="status-container">
