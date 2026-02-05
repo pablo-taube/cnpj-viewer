@@ -42,20 +42,38 @@ body {
     background-image: var(--app-gradient);
     background-attachment: fixed;
     color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 header {
     position: sticky; top: 0; z-index: 1000; height: 56px;
-    display: grid; grid-template-columns: 80px 1fr 80px; align-items: center;
+    display: grid; grid-template-columns: 100px 1fr 100px; align-items: center;
     padding: 0 16px; background-color: var(--header-bg);
     backdrop-filter: blur(20px) saturate(180%); border-bottom: 0.5px solid var(--separator);
 }
 
 header h1 { grid-column: 2; font-size: 16px; font-weight: 600; margin: 0; text-align: center; }
 
-header button { background: none; border: none; color: var(--accent-color); font-size: 15px; cursor: pointer; padding: 8px; border-radius: 8px; }
+/* Botão de Tema mais visível */
+.theme-toggle {
+    background: rgba(128, 128, 128, 0.15) !important;
+    border: 1px solid var(--separator) !important;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 10px !important;
+    font-size: 18px !important;
+}
 
-main { max-width: 1400px; margin: 24px auto; padding: 0 20px; }
+header button {
+    background: none; border: none; color: var(--accent-color);
+    font-size: 15px; cursor: pointer; padding: 8px; border-radius: 8px;
+}
+
+header button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+main { max-width: 1400px; margin: 24px auto; padding: 0 20px; flex: 1; width: 100%; }
 
 .disclaimer-card {
     background-color: var(--warning-bg); border-left: 4px solid var(--warning-text);
@@ -70,7 +88,6 @@ main { max-width: 1400px; margin: 24px auto; padding: 0 20px; }
     box-shadow: var(--shadow); padding: 24px; position: relative; overflow: hidden;
 }
 
-/* Timer e Progresso */
 #status-container { margin-top: 16px; display: none; text-align: center; }
 #timer-text { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
 .progress-bar-bg { width: 100%; height: 4px; background: var(--separator); position: absolute; top: 0; left: 0; }
@@ -92,40 +109,38 @@ table { width: 100%; border-collapse: collapse; font-size: 11px; }
 th { text-align: left; padding: 10px; color: var(--text-secondary); text-transform: uppercase; border-bottom: 1px solid var(--separator); white-space: nowrap; }
 td { padding: 10px; border-bottom: 0.5px solid var(--separator); vertical-align: top; }
 
-.truncate { max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: help; }
+.truncate { max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: help; }
 .ok { color: var(--success); font-weight: 600; }
 .bold { font-weight: 600; }
 
 footer {
-    padding: 32px 20px;
-    text-align: center;
-    border-top: 0.5px solid var(--separator);
-    font-size: 13px;
-    color: var(--text-secondary);
-    background-color: var(--header-bg);
+    padding: 24px; text-align: center; font-size: 12px;
+    color: var(--text-secondary); border-top: 0.5px solid var(--separator);
 }
-
-footer strong { color: var(--text-primary); font-weight: 500; }
 </style>
 </head>
 
 <body>
 
 <header>
-    <div class="header-left"><button onclick="toggleTheme()">☾</button></div>
+    <div class="header-left">
+        <button class="theme-toggle" onclick="toggleTheme()" title="Trocar Tema">☾</button>
+    </div>
     <h1>Consulta Interna de CNPJ</h1>
-    <div class="header-actions"><button id="exportarBtn" onclick="exportarExcel()" style="display:none;">Exportar</button></div>
+    <div class="header-actions">
+        <button id="exportarBtn" onclick="exportarExcel()">Exportar</button>
+    </div>
 </header>
 
 <main>
     <div class="disclaimer-card">
-        <span>⚠️ Aviso de Confidencialidade</span>
+        <span>Aviso de Confidencialidade</span>
         <p>Este site deve ser utilizado apenas internamento no âmbito da UNIDES, não devendo ser compartilhado. <br> Os dados são de responsabilidade da <a href="https://receitaws.com.br/">ReceitaWS</a> e levam cerca de 21 segundos por item.</p>
     </div>
 
     <div class="card">
         <div class="progress-bar-bg"><div id="progress-bar-fill"></div></div>
-        <textarea id="listaCNPJs" placeholder="Insira os CNPJs (um por linha)..."></textarea>
+        <textarea id="listaCNPJs" placeholder="Cole os CNPJs aqui..."></textarea>
         <button id="btnConsultar" class="main-btn" onclick="iniciarFila()">Consultar em Lote</button>
         
         <div id="status-container">
@@ -155,7 +170,7 @@ footer strong { color: var(--text-primary); font-weight: 500; }
 </main>
 
 <footer>
-    Desenvolvido por <strong>Pablo Taube</strong>. <br> Dados fornecidos por <a href="https://receitaws.com.br/">ReceitaWS</a>.
+    Desenvolvido por <strong>Pablo Taube</strong> <br>Dados fornecidos por <a href="https://receitaws.com.br/">ReceitaWS</a>
 </footer>
 
 <script>
@@ -165,7 +180,14 @@ let totalInicial = 0;
 
 function toggleTheme() {
     const body = document.body;
-    body.getAttribute('data-theme') === 'dark' ? body.removeAttribute('data-theme') : body.setAttribute('data-theme', 'dark');
+    const btn = document.querySelector('.theme-toggle');
+    if (body.getAttribute('data-theme') === 'dark') {
+        body.removeAttribute('data-theme');
+        btn.textContent = '☾';
+    } else {
+        body.setAttribute('data-theme', 'dark');
+        btn.textContent = '☀';
+    }
 }
 
 function formatarTempo(ms) {
@@ -182,7 +204,7 @@ function iniciarFila() {
     if (!fila.length) return alert("Nenhum CNPJ válido.");
     
     totalInicial = fila.length;
-    document.getElementById("exportarBtn").style.display = "none";
+    document.getElementById("exportarBtn").disabled = true;
     document.getElementById("status-container").style.display = "block";
     document.getElementById("btnConsultar").disabled = true;
     document.getElementById("btnConsultar").style.opacity = "0.5";
@@ -197,15 +219,16 @@ function atualizarProgresso() {
     const processados = totalInicial - faltam;
     const porcentagem = (processados / totalInicial) * 100;
     document.getElementById("progress-bar-fill").style.width = `${porcentagem}%`;
-    const tempoEstimadoMs = faltam * INTERVALO;
+    const tempoEstimadoMs = (faltam * INTERVALO);
     document.getElementById("tempo-restante").innerText = faltam > 0 ? formatarTempo(tempoEstimadoMs) : "Concluído!";
 }
 
 function consultarProximo() {
     if (!fila.length) {
-        document.getElementById("exportarBtn").style.display = "block";
+        document.getElementById("exportarBtn").disabled = false;
         document.getElementById("btnConsultar").disabled = false;
         document.getElementById("btnConsultar").style.opacity = "1";
+        document.getElementById("progress-bar-fill").style.width = "100%";
         return;
     }
 
@@ -214,7 +237,7 @@ function consultarProximo() {
 
     const tr = document.createElement("tr");
     tr.id = `row-${cnpj}`;
-    tr.innerHTML = `<td colspan="10" style="color:var(--text-secondary); text-align:center; padding:15px;">Aguardando retorno para ${cnpj}...</td>`;
+    tr.innerHTML = `<td colspan="10" style="color:var(--text-secondary); text-align:center; padding:15px;">Processando ${cnpj}...</td>`;
     document.getElementById("resultado").prepend(tr);
 
     const cb = "cb_" + Math.random().toString(36).substr(2, 9);
@@ -224,7 +247,7 @@ function consultarProximo() {
             const principal = `${data.atividade_principal[0].code} - ${data.atividade_principal[0].text}`;
             const secundarias = data.atividades_secundarias?.map(a => `${a.code} - ${a.text}`).join(" | ") || "-";
             const socios = data.qsa?.map(s => s.nome).join(", ") || "Não informado";
-            const contato = `${data.email || ""} ${data.telefone || ""}`.trim() || "-";
+            const contato = `${data.email || ""} | ${data.telefone || ""}`.trim();
 
             row.innerHTML = `
                 <td class="bold">${data.cnpj}</td>
@@ -238,7 +261,7 @@ function consultarProximo() {
                 <td>${contato}</td>
                 <td>${data.abertura}</td>`;
         } else {
-            row.innerHTML = `<td colspan="10" style="color:var(--error)">Falha na consulta do CNPJ ${cnpj}</td>`;
+            row.innerHTML = `<td colspan="10" style="color:var(--error)">Erro no CNPJ ${cnpj} (Aguardando intervalo)</td>`;
         }
         setTimeout(consultarProximo, INTERVALO);
     };
@@ -257,7 +280,7 @@ function exportarExcel() {
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `pnce_export_${new Date().toLocaleDateString().replace(/\//g,'-')}.csv`;
+    a.download = `relatorio_consulta_${new Date().getTime()}.csv`;
     a.click();
 }
 </script>
