@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Consulta Interna de CNPJ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+    --app-bg: #F2F2F7;
+    --app-gradient: radial-gradient(circle at 50% 0, #dbeafe 0%, transparent 75%);
+    --card-bg: rgba(255, 255, 255, 0.92);
+    --header-bg: rgba(242, 242, 247, 0.85);
+    --text-primary: #1C1C1E;
+    --text-secondary: #8E8E93;
+    --accent-color: #007AFF;
+    --separator: rgba(60, 60, 67, 0.18);
+    --card-border: rgba(255, 255, 255, 0.9);
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+    --warning-bg: rgba(255, 149, 0, 0.1);
+    --warning-text: #FF9500;
+    --error: #FF3B30;
+    --success: #34C759;
+}
+
+[data-theme="dark"] {
+    --app-bg: #000000;
+    --app-gradient: none;
+    --card-bg: rgba(28, 28, 30, 0.8);
+    --header-bg: rgba(0, 0, 0, 0.8);
+    --text-primary: #FFFFFF;
+    --text-secondary: #98989D;
+    --separator: rgba(84, 84, 88, 0.50);
+}
+
+* { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", sans-serif;
+    background: var(--app-bg);
+    background-image: var(--app-gradient);
+    background-attachment: fixed;
+    color: var(--text-primary);
+}
+
+header {
+    position: sticky; top: 0; z-index: 1000; height: 56px;
+    display: grid; grid-template-columns: 80px 1fr 80px; align-items: center;
+    padding: 0 16px; background-color: var(--header-bg);
+    backdrop-filter: blur(20px) saturate(180%); border-bottom: 0.5px solid var(--separator);
+}
+
+header h1 { grid-column: 2; font-size: 16px; font-weight: 600; margin: 0; text-align: center; }
+
+header button { background: none; border: none; color: var(--accent-color); font-size: 15px; cursor: pointer; padding: 8px; border-radius: 8px; }
+
+main { max-width: 1200px; margin: 24px auto; padding: 0 20px; }
+
+.disclaimer-card {
+    background-color: var(--warning-bg); border-left: 4px solid var(--warning-text);
+    padding: 16px 20px; border-radius: 12px; margin-bottom: 20px;
+}
+
+.disclaimer-card span { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--warning-text); margin-bottom: 4px; }
+
+.card {
+    background: var(--card-bg); backdrop-filter: blur(40px);
+    border: 1px solid var(--card-border); border-radius: 20px;
+    box-shadow: var(--shadow); padding: 24px; position: relative; overflow: hidden;
+}
+
+/* Timer e Progresso */
+#status-container { margin-top: 16px; display: none; text-align: center; }
+#timer-text { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+.progress-bar-bg { width: 100%; height: 4px; background: var(--separator); position: absolute; top: 0; left: 0; }
+#progress-bar-fill { width: 0%; height: 100%; background: var(--accent-color); transition: width 0.5s ease; }
+
+textarea {
+    width: 100%; height: 100px; border-radius: 14px; border: 1px solid var(--separator);
+    padding: 16px; font-size: 15px; background: rgba(128, 128, 128, 0.05);
+    color: var(--text-primary); outline: none; resize: none;
+}
+
+.main-btn {
+    margin-top: 16px; background: var(--accent-color); color: #fff;
+    border: none; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; width: 100%;
+}
+
+.table-wrapper { overflow-x: auto; margin-top: 24px; }
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+th { text-align: left; padding: 10px; color: var(--text-secondary); text-transform: uppercase; border-bottom: 1px solid var(--separator); }
+td { padding: 10px; border-bottom: 0.5px solid var(--separator); vertical-align: top; }
+.truncate { max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ok { color: var(--success); font-weight: 600; }
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-left"><button onclick="toggleTheme()">☾</button></div>
+    <h1>Consulta Interna de CNPJ</h1>
+    <div class="header-actions"><button id="exportarBtn" onclick="exportarExcel()" style="display:none;">Exportar</button></div>
+</header>
+
+<main>
+    <div class="disclaimer-card">
+        <span>⚠️ Uso Restrito</span>
+        <p>Este site deve ser utilizado apenas internamento no âmbito da UNIDES, não devendo ser compartilhado. <BR> Os dados são de responsabilidade da <a href="https://receitaws.com.br/">ReceitaWS</a></p>
+    </div>
+
+    <div class="card">
+        <div class="progress-bar-bg"><div id="progress-bar-fill"></div></div>
+        <textarea id="listaCNPJs" placeholder="Cole os CNPJs (um por linha)..."></textarea>
+        <button id="btnConsultar" class="main-btn" onclick="iniciarFila()">Consultar em Lote</button>
+        
+        <div id="status-container">
+            <div id="timer-text">Tempo restante estimado: <span id="tempo-restante">--:--</span></div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="tabela">
+                <thead>
+                    <tr>
+                        <th>CNPJ</th><th>Razão Social</th><th>Situação</th><th>Porte</th><th>Atividade</th><th>Sócios</th><th>Localização</th><th>Contatos</th>
+                    </tr>
+                </thead>
+                <tbody id="resultado"></tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script>
+const INTERVALO = 21000;
+let fila = [];
+let totalInicial = 0;
+
+function toggleTheme() {
+    const body = document.body;
+    body.getAttribute('data-theme') === 'dark' ? body.removeAttribute('data-theme') : body.setAttribute('data-theme', 'dark');
+}
+
+function formatarTempo(ms) {
+    const totalSegundos = Math.floor(ms / 1000);
+    const minutos = Math.floor(totalSegundos / 60);
+    const segundos = totalSegundos % 60;
+    return `${minutos}:${segundos.toString().padStart(2, '0')}`;
+}
+
+function iniciarFila() {
+    const text = document.getElementById("listaCNPJs").value;
+    fila = text.split("\n").map(c => c.replace(/\D/g,"")).filter(c => c.length === 14);
+    
+    if (!fila.length) return alert("Nenhum CNPJ válido.");
+    
+    totalInicial = fila.length;
+    document.getElementById("exportarBtn").style.display = "none";
+    document.getElementById("status-container").style.display = "block";
+    document.getElementById("btnConsultar").disabled = true;
+    document.getElementById("btnConsultar").style.opacity = "0.5";
+    document.getElementById("resultado").innerHTML = "";
+    
+    atualizarProgresso();
+    consultarProximo();
+}
+
+function atualizarProgresso() {
+    const faltam = fila.length;
+    const processados = totalInicial - faltam;
+    const porcentagem = (processados / totalInicial) * 100;
+    
+    document.getElementById("progress-bar-fill").style.width = `${porcentagem}%`;
+    
+    // Tempo estimado = itens na fila * intervalo
+    const tempoEstimadoMs = faltam * INTERVALO;
+    document.getElementById("tempo-restante").innerText = faltam > 0 ? formatarTempo(tempoEstimadoMs) : "Finalizando...";
+}
+
+function consultarProximo() {
+    if (!fila.length) {
+        document.getElementById("exportarBtn").style.display = "block";
+        document.getElementById("tempo-restante").innerText = "Concluído!";
+        document.getElementById("btnConsultar").disabled = false;
+        document.getElementById("btnConsultar").style.opacity = "1";
+        document.getElementById("progress-bar-fill").style.width = `100%`;
+        return;
+    }
+
+    const cnpj = fila.shift();
+    atualizarProgresso();
+
+    const tr = document.createElement("tr");
+    tr.id = `row-${cnpj}`;
+    tr.innerHTML = `<td colspan="8" style="color:var(--text-secondary); text-align:center; padding:15px;">Consultando ${cnpj}...</td>`;
+    document.getElementById("resultado").prepend(tr); // Adiciona no topo para facilitar visualização
+
+    const cb = "cb_" + Math.random().toString(36).substr(2, 9);
+    window[cb] = data => {
+        const row = document.getElementById(`row-${cnpj}`);
+        if (data.status === "OK") {
+            const socios = data.qsa?.map(s => s.nome).join(", ") || "-";
+            row.innerHTML = `
+                <td><b>${data.cnpj}</b></td>
+                <td>${data.nome}</td>
+                <td class="ok">${data.situacao}</td>
+                <td>${data.porte}</td>
+                <td class="truncate" title="${data.atividade_principal[0].text}">${data.atividade_principal[0].text}</td>
+                <td class="truncate" title="${socios}">${socios}</td>
+                <td>${data.municipio}/${data.uf}</td>
+                <td>${data.email || data.telefone}</td>`;
+        } else {
+            row.innerHTML = `<td colspan="8" style="color:var(--error)">Erro no CNPJ ${cnpj} (Aguardando intervalo)</td>`;
+        }
+        setTimeout(consultarProximo, INTERVALO);
+    };
+
+    const s = document.createElement("script");
+    s.src = `https://receitaws.com.br/v1/cnpj/${cnpj}?callback=${cb}`;
+    document.body.appendChild(s);
+}
+
+function exportarExcel() {
+    let csv = "\ufeff";
+    document.querySelectorAll("#tabela tr").forEach(row => {
+        let cols = [...row.children].map(td => `"${td.innerText.replace(/"/g,'""')}"`);
+        csv += cols.join(";") + "\n";
+    });
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `consulta_pnce_to_${new Date().getTime()}.csv`;
+    a.click();
+}
+</script>
+
+</body>
+</html>
