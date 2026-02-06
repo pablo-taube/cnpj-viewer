@@ -117,6 +117,10 @@ td {
 
 .sec-item { display: block; margin: 2px 0; border-left: 2px solid var(--separator); padding-left: 5px; }
 
+#status-container { margin-top: 16px; display: none; text-align: center; }
+
+#timer-text { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+
 footer { padding: 15px; text-align: center; font-size: 11px; color: var(--text-secondary); }
 </style>
 </head>
@@ -143,6 +147,10 @@ footer { padding: 15px; text-align: center; font-size: 11px; color: var(--text-s
         <textarea id="listaCNPJs" placeholder="Cole os CNPJs aqui..."></textarea>
         <button id="btnConsultar" class="main-btn" onclick="iniciarFila()">Consultar CNPJs</button>
         
+        <div id="status-container">
+            <div id="timer-text">Tempo restante estimado: <span id="tempo-restante">--:--</span></div>
+        </div>
+
         <div class="table-wrapper">
             <table id="tabela">
                 <thead>
@@ -176,6 +184,7 @@ footer { padding: 15px; text-align: center; font-size: 11px; color: var(--text-s
 const INTERVALO = 21000;
 let fila = [];
 let dadosExport = [];
+let totalInicial = 0;
 
 const SECOES = {
     'A': { n: 'Agricultura e Pecuária', c: '#2E7D32' },
@@ -233,6 +242,14 @@ function getSec(cnae) {
     return { l: 'U', ...SECOES['U'] };
 }
 
+function formatarTempo(ms) {
+    const totalSegundos = Math.ceil(ms / 1000);
+    const min = String(Math.floor(totalSegundos / 60)).padStart(2, "0");
+    const seg = String(totalSegundos % 60).padStart(2, "0");
+    return `${min}:${seg}`;
+}
+
+
 function iniciarFila() {
     const txt = document.getElementById("listaCNPJs").value;
     fila = txt.split("\n").map(c => c.replace(/\D/g,"")).filter(c => c.length === 14);
@@ -240,6 +257,19 @@ function iniciarFila() {
     document.getElementById("btnConsultar").disabled = true;
     document.getElementById("resultado").innerHTML = "";
     consultar();
+    totalInicial = fila.length;
+document.getElementById("status-container").style.display = "block";
+atualizarProgresso();
+
+}
+
+function atualizarProgresso() {
+    const faltam = fila.length;
+    const processados = totalInicial - faltam;
+    const porcentagem = (processados / totalInicial) * 100;
+    const bar = document.getElementById("progress-bar-fill");
+    if(bar) bar.style.width = `${porcentagem}%`;
+    document.getElementById("tempo-restante").innerText = faltam > 0 ? formatarTempo(faltam * INTERVALO) : "Concluído!";
 }
 
 function consultar() {
@@ -295,6 +325,7 @@ function consultar() {
         } else {
             row.innerHTML = `<td colspan="13" style="color:red">Erro no CNPJ ${cnpj}</td>`;
         }
+        atualizarProgresso();
         setTimeout(consultar, INTERVALO);
     };
 
