@@ -159,6 +159,7 @@ footer { padding: 15px; text-align: center; font-size: 11px; color: var(--text-s
                         <th>Nome Empresarial</th>
                         <th>Nome Fantasia</th>
                         <th>Situação</th>
+                        <th>Porte</th>
                         <th>CNAE Principal</th>
                         <th>CNAE Secundários</th>
                         <th>Município/UF</th>
@@ -313,6 +314,7 @@ function consultar() {
                 <td style="white-space:normal; min-width:200px;">${data.nome}</td>
                 <td>${data.fantasia || "-"}</td>
                 <td style="color:green; font-weight:700;">${data.situacao}</td>
+                <td>${data.porte || "-"}</td>
                 <td>${htmlPrincipal}</td>
                 <td>${htmlSec || "-"}</td>
                 <td>${data.municipio}/${data.uf}</td>
