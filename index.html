@@ -338,7 +338,7 @@ function consultar() {
 
 function exportarExcel() {
     // Cabeçalho com as novas colunas de Seção Equivalente
-    let csv = "\ufeffCNPJ;Nome Empresarial;Nome Fantasia;Situação;CNAE Principal;Seção Principal Equivalente;CNAE Secundários;Seções Secundárias Equivalentes;Município;UF;Sócios;E-mail;Telefone;Abertura;Última Atualiz;Billing\n";
+    let csv = "\ufeffCNPJ;Nome Empresarial;Nome Fantasia;Situação;Porte;CNAE Principal;Seção Principal Equivalente;CNAE Secundários;Seções Secundárias Equivalentes;Município;UF;Sócios;E-mail;Telefone;Abertura;Última Atualiz;Billing\n";
     
     dadosExport.forEach(d => {
         // --- Processamento do CNAE Principal ---
@@ -378,6 +378,7 @@ function exportarExcel() {
             d.nome, 
             d.fantasia || "", 
             d.situacao,
+            d.porte || "",
             `${pCnae.code} - ${pCnae.text}`,
             secaoPrincipalStr, // Coluna Adicional 1
             d.atividades_secundarias?.map(a => `${a.code}: ${a.text}`).join(" | ") || "Não informada",
