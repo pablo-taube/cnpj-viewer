@@ -55,8 +55,50 @@ main { max-width: 98%; margin: 20px auto; flex: 1; width: 100%; }
 .disclaimer-card span { display: block; font-size: 15px; font-weight: 700; text-transform: uppercase; color: var(--warning-text); margin-bottom: 4px; }
 
 .card {
-    background: var(--card-bg); border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04); padding: 20px;
+    background: var(--card-bg); 
+    backdrop-filter: blur(40px);
+    border: 1px solid var(--card-border); 
+    border-radius: 20px;
+    box-shadow: var(--shadow); 
+    padding: 24px; 
+    position: relative; 
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza todos os elementos internamente */
+}
+
+.disclaimer-card,
+textarea,
+.main-btn,
+.table-wrapper {
+    width: 100% !important;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box; /* Garante que padding não estoure o width */
+}
+
+/* Ajustes finos de margem e reset de larguras específicas */
+textarea {
+    height: 100px; /* Aumentado para melhor visibilidade */
+    margin-bottom: 10px;
+}
+
+.main-btn {
+    margin-top: 10px;
+}
+
+.table-wrapper { 
+    margin-top: 20px;
+}
+
+/* A tabela agora ocupa 100% do wrapper (que já tem 95%) */
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    font-size: 11px; 
+    white-space: nowrap; 
 }
 
 textarea {
