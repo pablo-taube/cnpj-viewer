@@ -17,6 +17,9 @@
     --card-border: rgba(255, 255, 255, 0.9);
     --warning-bg: rgba(255, 149, 0, 0.1);
     --warning-text: #FF9500;
+    --success: #34C759; /* Verde */
+    --error: #FF3B30;   /* Vermelho */
+    --warning-text: #FF9500; /* Laranja */
 }
 
 [data-theme="dark"] {
@@ -334,50 +337,60 @@ function consultar() {
     document.getElementById("resultado").prepend(tr);
 
     const cb = "cb_" + Math.random().toString(36).substr(2, 9);
-    window[cb] = data => {
+    
+    window[cb] = function(data) {
         const row = document.getElementById(`row-${cnpj}`);
-        if (data.status === "OK") {
-            dadosExport.push(data);
-            
-            const sP = getSec(data.atividade_principal[0].code);
-            const htmlPrincipal = `<div class="cnae-col-main"><span class="pill" style="background:${sP.c}">SEÇÃO ${sP.l} | ${sP.n}</span><br><b>${data.atividade_principal[0].code}</b> - ${data.atividade_principal[0].text}</div>`;
+    if (data.status === "OK") {
+        dadosExport.push(data);
+        
+        // --- LÓGICA DE COR DA SITUAÇÃO ---
+        let corSituacao = "var(--text-primary)"; 
+        const sit = data.situacao.toUpperCase();
+        
+        if (sit === "ATIVA") corSituacao = "var(--success)";
+        else if (sit === "BAIXADA") corSituacao = "var(--error)";
+        else if (sit === "SUSPENSA") corSituacao = "var(--warning-text)";
+        // --------------------------------
 
-            let sMap = {};
-            data.atividades_secundarias?.forEach(a => {
-                const s = getSec(a.code);
-                if (!sMap[s.l]) sMap[s.l] = { n: s.n, items: [] };
-                sMap[s.l].items.push(a);
-            });
+        const sP = getSec(data.atividade_principal[0].code);
+        const htmlPrincipal = `<div class="cnae-col-main"><span class="pill" style="background:${sP.c}">SEÇÃO ${sP.l} | ${sP.n}</span><br><b>${data.atividade_principal[0].code}</b> - ${data.atividade_principal[0].text}</div>`;
 
-            let htmlSec = `<div class="cnae-col-sec"><div class="secundario-list">`;
-            for (let l in sMap) {
-                htmlSec += `<span class="secao-header">SEÇÃO ${l} - ${sMap[l].n}</span>`;
-                sMap[l].items.forEach(a => htmlSec += `<div class="sec-item"><b>${a.code}</b> - ${a.text}</div>`);
-            }
-            htmlSec += `</div></div>`;
+        let sMap = {};
+        data.atividades_secundarias?.forEach(a => {
+            const s = getSec(a.code);
+            if (!sMap[s.l]) sMap[s.l] = { n: s.n, items: [] };
+            sMap[s.l].items.push(a);
+        });
 
-            row.innerHTML = `
-                <td>${data.cnpj}</td>
-                <td style="white-space:normal; min-width:200px;">${data.nome}</td>
-                <td>${data.fantasia || "-"}</td>
-                <td style="color:green; font-weight:700;">${data.situacao}</td>
-                <td>${data.porte || "-"}</td>
-                <td>${htmlPrincipal}</td>
-                <td>${htmlSec || "-"}</td>
-                <td>${data.municipio}/${data.uf}</td>
-                <td style="white-space:normal;">${data.qsa?.map(s => s.nome).join(", ") || "-"}</td>
-                <td>${data.email || "-"}</td>
-                <td>${data.telefone || "-"}</td>
-                <td>${data.abertura}</td>
-                <td>${data.ultima_atualizacao ? new Date(data.ultima_atualizacao).toLocaleDateString() : "-"}</td>
-                <td>${data.billing?.free ? "Grátis" : "Paga"}</td>`;
-        } else {
-            // Adicionado: Salva o erro no array para exportação
-            dadosExport.push({ cnpj: cnpj, nome: "ERRO NA CONSULTA (Limite ou CNPJ Inválido)", status: "ERROR" });
-            row.innerHTML = `<td colspan="13" style="color:red">Erro no CNPJ ${cnpj}</td>`;
-        }        
-        atualizarProgresso();
-        setTimeout(consultar, INTERVALO);
+        let htmlSec = `<div class="cnae-col-sec"><div class="secundario-list">`;
+        for (let l in sMap) {
+            htmlSec += `<span class="secao-header">SEÇÃO ${l} - ${sMap[l].n}</span>`;
+            sMap[l].items.forEach(a => htmlSec += `<div class="sec-item"><b>${a.code}</b> - ${a.text}</div>`);
+        }
+        htmlSec += `</div></div>`;
+
+        // CORREÇÃO AQUI: Substituímos "color:green" por "color:${corSituacao}"
+        row.innerHTML = `
+            <td>${data.cnpj}</td>
+            <td style="white-space:normal; min-width:200px;">${data.nome}</td>
+            <td>${data.fantasia || "-"}</td>
+            <td style="color:${corSituacao}; font-weight:700;">${data.situacao}</td>
+            <td>${data.porte || "-"}</td>
+            <td>${htmlPrincipal}</td>
+            <td>${htmlSec || "-"}</td>
+            <td>${data.municipio}/${data.uf}</td>
+            <td style="white-space:normal;">${data.qsa?.map(s => s.nome).join(", ") || "-"}</td>
+            <td>${data.email || "-"}</td>
+            <td>${data.telefone || "-"}</td>
+            <td>${data.abertura}</td>
+            <td>${data.ultima_atualizacao ? new Date(data.ultima_atualizacao).toLocaleDateString() : "-"}</td>
+            <td>${data.billing?.free ? "Grátis" : "Paga"}</td>`;
+    } else {
+        dadosExport.push({ cnpj: cnpj, nome: "ERRO NA CONSULTA (Limite ou CNPJ Inválido)", status: "ERROR" });
+        row.innerHTML = `<td colspan="13" style="color:red">Erro no CNPJ ${cnpj}</td>`;
+    }        
+    atualizarProgresso();
+    setTimeout(consultar, INTERVALO);
     };
 
     const s = document.createElement("script");
