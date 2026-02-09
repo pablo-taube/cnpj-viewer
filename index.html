@@ -76,7 +76,7 @@ textarea {
 }
 
 table { 
-    width: 100%; 
+    width: 95%; 
     border-collapse: collapse; 
     font-size: 11px; 
     white-space: nowrap; /* Mantém os dados em uma linha para forçar o scroll horizontal */
@@ -123,6 +123,45 @@ td {
 
 #timer-text { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
 
+/* Estilo para o Dropdown de Exportação */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: var(--card-bg);
+    min-width: 200px;
+    box-shadow: var(--shadow);
+    border-radius: 8px;
+    z-index: 1001;
+    border: 1px solid var(--separator);
+}
+
+.dropdown-content button {
+    color: var(--text-primary);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.dropdown-content button:hover {
+    background-color: rgba(0, 122, 255, 0.1);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
 footer { padding: 15px; text-align: center; font-size: 11px; color: var(--text-secondary); }
 </style>
 </head>
@@ -132,7 +171,13 @@ footer { padding: 15px; text-align: center; font-size: 11px; color: var(--text-s
 <header>
     <button onclick="document.body.classList.toggle('dark-mode')" style="background:none; border:none; cursor:pointer;">☾</button>
     <h1 style="font-size: 16px; margin: 0;">Consulta Detalhada de CNPJs</h1>
-    <button id="exportarBtn" onclick="exportarExcel()" style="background:none; border:none; color:var(--accent-color); font-weight:600; cursor:pointer;" disabled>Exportar</button>
+    <div class="dropdown">
+        <button id="exportarBtn" style="background:none; border:none; color:var(--accent-color); font-weight:600; cursor:pointer;" disabled>Exportar ▾</button>
+        <div class="dropdown-content">
+            <button onclick="exportarExcel()">Exportação Completa</button>
+            <button onclick="exportarPipefy()">Exportação Modelo Pipefy</button>
+        </div>
+    </div>
 </header>
 
 <main>
@@ -404,6 +449,31 @@ function exportarExcel() {
     link.download = `relatorio_unides_secoes_${new Date().getTime()}.csv`;
     link.click();
 }
+
+function exportarPipefy() {
+    if (dadosExport.length === 0) return alert("Não há dados para exportar.");
+
+    // Cabeçalho específico conforme solicitado
+    let csv = "\ufeffCNPJ;Nome Empresarial;E-mail;Telefone;Porte\n";
+
+    dadosExport.forEach(d => {
+        const row = [
+            d.cnpj,
+            d.nome,
+            d.email || "-",
+            d.telefone || "-",
+            d.porte || "-"
+        ];
+        csv += row.map(v => `"${(v || "").toString().replace(/"/g, '""')}"`).join(";") + "\n";
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `modelo_pipefy_${new Date().getTime()}.csv`;
+    link.click();
+}
+
 </script>
 
 </body>
