@@ -372,8 +372,10 @@ function consultar() {
                 <td>${data.ultima_atualizacao ? new Date(data.ultima_atualizacao).toLocaleDateString() : "-"}</td>
                 <td>${data.billing?.free ? "Grátis" : "Paga"}</td>`;
         } else {
+            // Adicionado: Salva o erro no array para exportação
+            dadosExport.push({ cnpj: cnpj, nome: "ERRO NA CONSULTA (Limite ou CNPJ Inválido)", status: "ERROR" });
             row.innerHTML = `<td colspan="13" style="color:red">Erro no CNPJ ${cnpj}</td>`;
-        }
+        }        
         atualizarProgresso();
         setTimeout(consultar, INTERVALO);
     };
@@ -389,6 +391,12 @@ function exportarExcel() {
     
     dadosExport.forEach(d => {
         // --- Processamento do CNAE Principal ---
+        if (d.status === "ERROR") {
+            const rowErro = [d.cnpj, d.nome, "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
+            csv += rowErro.map(v => `"${v}"`).join(";") + "\n";
+            return; // Pula para o próximo item
+        }
+
         const pCnae = (d.atividade_principal && d.atividade_principal[0] && d.atividade_principal[0].code !== "00.00-0-00") 
             ? d.atividade_principal[0] 
             : { code: "00.00-0-00", text: "Não informada" };
@@ -457,6 +465,13 @@ function exportarPipefy() {
     let csv = "\ufeffCNPJ;Nome Empresarial;E-mail;Telefone;Porte\n";
 
     dadosExport.forEach(d => {
+
+        if (d.status === "ERROR") {
+            const rowErro = [d.cnpj, d.nome, "-", "-", "-"];
+            csv += rowErro.map(v => `"${v}"`).join(";") + "\n";
+            return;
+        }
+
         const row = [
             d.cnpj,
             d.nome,
