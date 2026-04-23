@@ -1,551 +1,727 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<title>Consulta Detalhada de CNPJs</title>
-<link rel="icon" href="./media/page-icon.png" type="image/png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Consulta Detalhada de CNPJs</title>
+    <link rel="icon" href="./media/page-icon.png" type="image/png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-:root {
-    --app-bg: #F2F2F7;
-    --card-bg: rgba(255, 255, 255, 0.92);
-    --header-bg: rgba(242, 242, 247, 0.85);
-    --text-primary: #1C1C1E;
-    --text-secondary: #8E8E93;
-    --accent-color: #007AFF;
-    --separator: rgba(60, 60, 67, 0.18);
-    --card-border: rgba(255, 255, 255, 0.9);
-    --warning-bg: rgba(255, 149, 0, 0.1);
-    --warning-text: #FF9500;
-    --success: #34C759; /* Verde */
-    --error: #FF3B30;   /* Vermelho */
-    --warning-text: #FF9500; /* Laranja */
-}
+    <style>
+      :root {
+        --app-bg: #f2f2f7;
+        --card-bg: rgba(255, 255, 255, 0.92);
+        --header-bg: rgba(242, 242, 247, 0.85);
+        --text-primary: #1c1c1e;
+        --text-secondary: #8e8e93;
+        --accent-color: #007aff;
+        --separator: rgba(60, 60, 67, 0.18);
+        --card-border: rgba(255, 255, 255, 0.9);
+        --warning-bg: rgba(255, 149, 0, 0.1);
+        --warning-text: #ff9500;
+        --success: #34c759; /* Verde */
+        --error: #ff3b30; /* Vermelho */
+        --warning-text: #ff9500; /* Laranja */
+      }
 
-[data-theme="dark"] {
-    --app-bg: #000000;
-    --card-bg: rgba(28, 28, 30, 0.8);
-    --header-bg: rgba(0, 0, 0, 0.8);
-    --text-primary: #FFFFFF;
-    --text-secondary: #98989D;
-}
+      [data-theme="dark"] {
+        --app-bg: #000000;
+        --card-bg: rgba(28, 28, 30, 0.8);
+        --header-bg: rgba(0, 0, 0, 0.8);
+        --text-primary: #ffffff;
+        --text-secondary: #98989d;
+      }
 
-body {
-    margin: 0; font-family: -apple-system, sans-serif;
-    background: var(--app-bg); color: var(--text-primary);
-    display: flex; flex-direction: column; min-height: 100vh;
-}
+      body {
+        margin: 0;
+        font-family: -apple-system, sans-serif;
+        background: var(--app-bg);
+        color: var(--text-primary);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
 
-header {
-    position: sticky; top: 0; z-index: 1000; height: 56px;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 16px; background-color: var(--header-bg);
-    backdrop-filter: blur(20px) saturate(180%); border-bottom: 0.5px solid var(--separator);
-}
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        background-color: var(--header-bg);
+        backdrop-filter: blur(20px) saturate(180%);
+        border-bottom: 0.5px solid var(--separator);
+      }
 
-main { max-width: 98%; margin: 20px auto; flex: 1; width: 100%; }
+      main {
+        max-width: 98%;
+        margin: 20px auto;
+        flex: 1;
+        width: 100%;
+      }
 
-.disclaimer-card {
-    background-color: var(--warning-bg); border-left: 4px solid var(--warning-text);
-    padding: 16px 20px; border-radius: 12px; margin-bottom: 20px;
-}
+      .disclaimer-card {
+        background-color: var(--warning-bg);
+        border-left: 4px solid var(--warning-text);
+        padding: 16px 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
 
-.disclaimer-card p { margin: 0; font-size: 13px; color: var(--text-secondary); }
+      .disclaimer-card p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
 
-.disclaimer-card span { display: block; font-size: 15px; font-weight: 700; text-transform: uppercase; color: var(--warning-text); margin-bottom: 4px; }
+      .disclaimer-card span {
+        display: block;
+        font-size: 15px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--warning-text);
+        margin-bottom: 4px;
+      }
 
-.card {
-    background: var(--card-bg); 
-    backdrop-filter: blur(40px);
-    border: 1px solid var(--card-border); 
-    border-radius: 20px;
-    box-shadow: var(--shadow); 
-    padding: 24px; 
-    position: relative; 
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centraliza todos os elementos internamente */
-}
+      .card {
+        background: var(--card-bg);
+        backdrop-filter: blur(40px);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centraliza todos os elementos internamente */
+      }
 
-.disclaimer-card,
-textarea,
-.main-btn,
-.table-wrapper {
-    width: 100% !important;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    box-sizing: border-box; /* Garante que padding não estoure o width */
-}
+      .disclaimer-card,
+      textarea,
+      .main-btn,
+      .table-wrapper {
+        width: 100% !important;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        box-sizing: border-box; /* Garante que padding não estoure o width */
+      }
 
-/* Ajustes finos de margem e reset de larguras específicas */
-textarea {
-    height: 100px; /* Aumentado para melhor visibilidade */
-    margin-bottom: 10px;
-}
+      /* Ajustes finos de margem e reset de larguras específicas */
+      textarea {
+        height: 100px; /* Aumentado para melhor visibilidade */
+        margin-bottom: 10px;
+      }
 
-.main-btn {
-    margin-top: 10px;
-}
+      .main-btn {
+        margin-top: 10px;
+      }
 
-.table-wrapper { 
-    margin-top: 20px;
-}
+      .table-wrapper {
+        margin-top: 20px;
+      }
 
-/* A tabela agora ocupa 100% do wrapper (que já tem 95%) */
-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    font-size: 11px; 
-    white-space: nowrap; 
-}
+      /* A tabela agora ocupa 100% do wrapper (que já tem 95%) */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+        white-space: nowrap;
+      }
 
-textarea {
-    width: 95%; height: 60px; border-radius: 10px; border: 1px solid var(--separator);
-    padding: 10px; font-size: 14px; background: rgba(128, 128, 128, 0.05);
-    color: var(--text-primary); resize: none; margin-bottom: 10px;
-}
+      textarea {
+        width: 95%;
+        height: 60px;
+        border-radius: 10px;
+        border: 1px solid var(--separator);
+        padding: 10px;
+        font-size: 14px;
+        background: rgba(128, 128, 128, 0.05);
+        color: var(--text-primary);
+        resize: none;
+        margin-bottom: 10px;
+      }
 
-.main-btn {
-    background: var(--accent-color); color: #fff; border: none;
-    padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 99%;
-}
+      .main-btn {
+        background: var(--accent-color);
+        color: #fff;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 99%;
+      }
 
-/* Força a rolagem horizontal e evita quebra de texto nas colunas */
-.table-wrapper { 
-    overflow-x: auto; 
-    margin-top: 20px; 
-    border-radius: 8px;
-    border: 1px solid var(--separator);
-}
+      /* Força a rolagem horizontal e evita quebra de texto nas colunas */
+      .table-wrapper {
+        overflow-x: auto;
+        margin-top: 20px;
+        border-radius: 8px;
+        border: 1px solid var(--separator);
+      }
 
-table { 
-    width: 95%; 
-    border-collapse: collapse; 
-    font-size: 11px; 
-    white-space: nowrap; /* Mantém os dados em uma linha para forçar o scroll horizontal */
-}
+      table {
+        width: 95%;
+        border-collapse: collapse;
+        font-size: 11px;
+        white-space: nowrap; /* Mantém os dados em uma linha para forçar o scroll horizontal */
+      }
 
-th { 
-    background: #f8f8f8;
-    text-align: left; padding: 12px 10px; 
-    color: var(--text-secondary); 
-    text-transform: uppercase; 
-    border-bottom: 1px solid var(--separator);
-}
+      th {
+        background: #f8f8f8;
+        text-align: left;
+        padding: 12px 10px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--separator);
+      }
 
-td { 
-    padding: 12px 10px; 
-    border-bottom: 0.5px solid var(--separator); 
-    vertical-align: center;
-}
+      td {
+        padding: 12px 10px;
+        border-bottom: 0.5px solid var(--separator);
+        vertical-align: center;
+      }
 
-/* CNAE Styles */
-.pill {
-    display: inline-block; padding: 2px 8px; border-radius: 20px;
-    font-size: 9px; font-weight: 700; color: #fff; margin-bottom: 4px;
-}
+      /* CNAE Styles */
+      .pill {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 9px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+      }
 
-.cnae-col-main { min-width: 250px; white-space: normal; }
-.cnae-col-sec { min-width: 350px; white-space: normal; }
+      .cnae-col-main {
+        min-width: 250px;
+        white-space: normal;
+      }
+      .cnae-col-sec {
+        min-width: 350px;
+        white-space: normal;
+      }
 
-/* Container interno para CNAEs Secundários com scroll vertical se for muito longo */
-.secundario-list {
-    max-height: 120px;
-    overflow-y: auto;
-    font-size: 10px;
-}
+      /* Container interno para CNAEs Secundários com scroll vertical se for muito longo */
+      .secundario-list {
+        max-height: 120px;
+        overflow-y: auto;
+        font-size: 10px;
+      }
 
-.secao-header {
-    display: block; font-weight: 800; color: var(--accent-color);
-    margin-top: 5px; font-size: 9px;
-}
+      .secao-header {
+        display: block;
+        font-weight: 800;
+        color: var(--accent-color);
+        margin-top: 5px;
+        font-size: 9px;
+      }
 
-.sec-item { display: block; margin: 2px 0; border-left: 2px solid var(--separator); padding-left: 5px; }
+      .sec-item {
+        display: block;
+        margin: 2px 0;
+        border-left: 2px solid var(--separator);
+        padding-left: 5px;
+      }
 
-#status-container { margin-top: 16px; display: none; text-align: center; }
+      #status-container {
+        margin-top: 16px;
+        display: none;
+        text-align: center;
+      }
 
-#timer-text { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+      #timer-text {
+        font-size: 13px;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
 
-/* Estilo para o Dropdown de Exportação */
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
+      /* Estilo para o Dropdown de Exportação */
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    background-color: var(--card-bg);
-    min-width: 200px;
-    box-shadow: var(--shadow);
-    border-radius: 8px;
-    z-index: 1001;
-    border: 1px solid var(--separator);
-}
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: var(--card-bg);
+        min-width: 200px;
+        box-shadow: var(--shadow);
+        border-radius: 8px;
+        z-index: 1001;
+        border: 1px solid var(--separator);
+      }
 
-.dropdown-content button {
-    color: var(--text-primary);
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    font-size: 13px;
-    cursor: pointer;
-}
+      .dropdown-content button {
+        color: var(--text-primary);
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        font-size: 13px;
+        cursor: pointer;
+      }
 
-.dropdown-content button:hover {
-    background-color: rgba(0, 122, 255, 0.1);
-}
+      .dropdown-content button:hover {
+        background-color: rgba(0, 122, 255, 0.1);
+      }
 
-.dropdown:hover .dropdown-content {
-    display: block;
-}
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
 
-footer { padding: 15px; text-align: center; font-size: 11px; color: var(--text-secondary); }
-</style>
-</head>
+      footer {
+        padding: 15px;
+        text-align: center;
+        font-size: 11px;
+        color: var(--text-secondary);
+      }
+    </style>
+  </head>
 
-<body>
-
-<header>
-    <button onclick="document.body.classList.toggle('dark-mode')" style="background:none; border:none; cursor:pointer;">☾</button>
-    <h1 style="font-size: 16px; margin: 0;">Consulta Detalhada de CNPJs</h1>
-    <div class="dropdown">
-        <button id="exportarBtn" style="background:none; border:none; color:var(--accent-color); font-weight:600; cursor:pointer;" disabled>Exportar ▾</button>
+  <body>
+    <header>
+      <button
+        onclick="document.body.classList.toggle('dark-mode')"
+        style="background: none; border: none; cursor: pointer"
+      >
+        ☾
+      </button>
+      <h1 style="font-size: 16px; margin: 0">Consulta Detalhada de CNPJs</h1>
+      <div class="dropdown">
+        <button
+          id="exportarBtn"
+          style="
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-weight: 600;
+            cursor: pointer;
+          "
+          disabled
+        >
+          Exportar ▾
+        </button>
         <div class="dropdown-content">
-            <button onclick="exportarExcel()">Exportação Completa</button>
-            <button onclick="exportarPipefy()">Exportação Modelo Pipefy</button>
+          <button onclick="exportarExcel()">Exportação Completa</button>
+          <button onclick="exportarPipefy()">Exportação Modelo Pipefy</button>
         </div>
-    </div>
-</header>
+      </div>
+    </header>
 
-<main>
-
-    <div class="disclaimer-card">
-
+    <main>
+      <div class="disclaimer-card">
         <span>⚠️ Aviso de Confidencialidade</span>
 
-        <p>- Este site deve ser utilizado apenas internamente no âmbito da UNIDES, não devendo ser compartilhado. <br> - Os dados são de responsabilidade da <a href="https://receitaws.com.br/">ReceitaWS</a> e levam cerca de 21 segundos por item. <br> - A classificação de setores é baseada na lista disponibilizada pelo IBGE (Concla).</p>
+        <p>
+          - Este site deve ser utilizado apenas internamente no âmbito da
+          UNIDES, não devendo ser compartilhado. <br />
+          - Os dados são de responsabilidade da
+          <a href="https://receitaws.com.br/">ReceitaWS</a> e levam cerca de 21
+          segundos por item. <br />
+          - A classificação de setores é baseada na lista disponibilizada pelo
+          IBGE (Concla).
+        </p>
+      </div>
 
-    </div>
+      <div class="card">
+        <textarea
+          id="listaCNPJs"
+          placeholder="Cole os CNPJs aqui..."
+        ></textarea>
+        <button id="btnConsultar" class="main-btn" onclick="iniciarFila()">
+          Consultar CNPJs
+        </button>
 
-    <div class="card">
-        <textarea id="listaCNPJs" placeholder="Cole os CNPJs aqui..."></textarea>
-        <button id="btnConsultar" class="main-btn" onclick="iniciarFila()">Consultar CNPJs</button>
-        
         <div id="status-container">
-            <div id="timer-text">Tempo restante estimado: <span id="tempo-restante">--:--</span></div>
+          <div id="timer-text">
+            Tempo restante estimado: <span id="tempo-restante">--:--</span>
+          </div>
         </div>
 
         <div class="table-wrapper">
-            <table id="tabela">
-                <thead>
-                    <tr>
-                        <th>CNPJ</th>
-                        <th>Nome Empresarial</th>
-                        <th>Nome Fantasia</th>
-                        <th>Situação</th>
-                        <th>Porte</th>
-                        <th>CNAE Principal</th>
-                        <th>CNAE Secundários</th>
-                        <th>Município/UF</th>
-                        <th>Sócio Resp.</th>
-                        <th>E-mail</th>
-                        <th>Telefone</th>
-                        <th>Abertura</th>
-                        <th>Última Atualiz.</th>
-                        <th>Billing</th>
-                    </tr>
-                </thead>
-                <tbody id="resultado"></tbody>
-            </table>
+          <table id="tabela">
+            <thead>
+              <tr>
+                <th>CNPJ</th>
+                <th>Nome Empresarial</th>
+                <th>Nome Fantasia</th>
+                <th>Situação</th>
+                <th>Porte</th>
+                <th>CNAE Principal</th>
+                <th>CNAE Secundários</th>
+                <th>Município/UF</th>
+                <th>Sócio Resp.</th>
+                <th>E-mail</th>
+                <th>Telefone</th>
+                <th>Abertura</th>
+                <th>Última Atualiz.</th>
+                <th>Billing</th>
+              </tr>
+            </thead>
+            <tbody id="resultado"></tbody>
+          </table>
         </div>
-    </div>
-</main>
+      </div>
+    </main>
 
-<footer>
-    Desenvolvido por <strong>Pablo Taube</strong> <br>Dados fornecidos por <a href="https://receitaws.com.br/">ReceitaWS</a>
-</footer>
+    <footer>
+      Desenvolvido por <strong>Pablo Taube</strong> <br />Dados fornecidos por
+      <a href="https://receitaws.com.br/">ReceitaWS</a>
+    </footer>
 
-<script>
-const INTERVALO = 21000;
-let fila = [];
-let dadosExport = [];
-let totalInicial = 0;
+    <script>
+      const INTERVALO = 21000;
+      let fila = [];
+      let dadosExport = [];
+      let totalInicial = 0;
 
-const SECOES = {
-    'A': { n: 'Agricultura e Pecuária', c: '#2E7D32' },
-    'B': { n: 'Indústria Extrativas', c: '#4E342E' },
-    'C': { n: 'Indústria de Transformação', c: '#1565C0' },
-    'D': { n: 'Eletricidade e Gás', c: '#FF8F00' },
-    'E': { n: 'Água e Esgoto', c: '#00838F' },
-    'F': { n: 'Construção', c: '#37474F' },
-    'G': { n: 'Comércio e Reparação Veicular', c: '#C2185B' },
-    'H': { n: 'Transporte, Armazenagem e Correios', c: '#6A1B9A' },
-    'I': { n: 'Alojamento e Alimentação.', c: '#D84315' },
-    'J': { n: 'Informação e Comunicação', c: '#283593' },
-    'K': { n: 'Atividades Financeiras e Seguros', c: '#4527A0' },
-    'L': { n: 'Atividades Imobiliárias.', c: '#212121' },
-    'M': { n: 'Atividades Profissionais, Científicas e Técnicas', c: '#00695C' },
-    'N': { n: 'Atividades Administrativas', c: '#558B2F' },
-    'O': { n: 'Administração Pública', c: '#B71C1C' },
-    'P': { n: 'Educação', c: '#9E9D24' },
-    'Q': { n: 'Saúde e Serviços Sociais', c: '#0277BD' },
-    'R': { n: 'Artes, Cultura Esporte e Recreação', c: '#FF6F00' },
-    'S': { n: 'Outras atividades de Serviços', c: '#424242' },
-    'T': { n: 'Serviços Domésticos.', c: '#000000' },
-    'U': { n: 'Organismos Internacionais.', c: '#3E2723' }
-};
+      const SECOES = {
+        A: { n: "Agricultura e Pecuária", c: "#2E7D32" },
+        B: { n: "Indústria Extrativas", c: "#4E342E" },
+        C: { n: "Indústria de Transformação", c: "#1565C0" },
+        D: { n: "Eletricidade e Gás", c: "#FF8F00" },
+        E: { n: "Água e Esgoto", c: "#00838F" },
+        F: { n: "Construção", c: "#37474F" },
+        G: { n: "Comércio e Reparação Veicular", c: "#C2185B" },
+        H: { n: "Transporte, Armazenagem e Correios", c: "#6A1B9A" },
+        I: { n: "Alojamento e Alimentação.", c: "#D84315" },
+        J: { n: "Informação e Comunicação", c: "#283593" },
+        K: { n: "Atividades Financeiras e Seguros", c: "#4527A0" },
+        L: { n: "Atividades Imobiliárias.", c: "#212121" },
+        M: {
+          n: "Atividades Profissionais, Científicas e Técnicas",
+          c: "#00695C",
+        },
+        N: { n: "Atividades Administrativas", c: "#558B2F" },
+        O: { n: "Administração Pública", c: "#B71C1C" },
+        P: { n: "Educação", c: "#9E9D24" },
+        Q: { n: "Saúde e Serviços Sociais", c: "#0277BD" },
+        R: { n: "Artes, Cultura Esporte e Recreação", c: "#FF6F00" },
+        S: { n: "Outras atividades de Serviços", c: "#424242" },
+        T: { n: "Serviços Domésticos.", c: "#000000" },
+        U: { n: "Organismos Internacionais.", c: "#3E2723" },
+      };
 
-function getSec(cnae) {
-    // Verifica se o CNAE é nulo, vazio ou o código de "Não Informada"
-    if (!cnae || cnae.includes("00.00-0-00") || cnae.toLowerCase().includes("não informada")) {
-        return { l: 'X', n: 'NÃO INFORMADA', c: '#8E8E93' };
-    }
-    
-    const d = parseInt(cnae.replace(/\D/g, '').substring(0, 2));
-    if (isNaN(d)) return { l: '?', n: 'NÃO INFORMADA', c: '#8E8E93' };
-
-    if (d <= 3) return { l: 'A', ...SECOES['A'] }; 
-    if (d <= 9) return { l: 'B', ...SECOES['B'] };
-    if (d <= 33) return { l: 'C', ...SECOES['C'] }; 
-    if (d <= 35) return { l: 'D', ...SECOES['D'] };
-    if (d <= 39) return { l: 'E', ...SECOES['E'] }; 
-    if (d <= 43) return { l: 'F', ...SECOES['F'] };
-    if (d <= 47) return { l: 'G', ...SECOES['G'] }; 
-    if (d <= 53) return { l: 'H', ...SECOES['H'] };
-    if (d <= 56) return { l: 'I', ...SECOES['I'] }; 
-    if (d <= 63) return { l: 'J', ...SECOES['J'] };
-    if (d <= 66) return { l: 'K', ...SECOES['K'] }; 
-    if (d <= 68) return { l: 'L', ...SECOES['L'] };
-    if (d <= 75) return { l: 'M', ...SECOES['M'] }; 
-    if (d <= 82) return { l: 'N', ...SECOES['N'] };
-    if (d <= 84) return { l: 'O', ...SECOES['O'] }; 
-    if (d <= 85) return { l: 'P', ...SECOES['P'] };
-    if (d <= 88) return { l: 'Q', ...SECOES['Q'] }; 
-    if (d <= 93) return { l: 'R', ...SECOES['R'] };
-    if (d <= 96) return { l: 'S', ...SECOES['S'] }; 
-    if (d <= 97) return { l: 'T', ...SECOES['T'] };
-    return { l: 'U', ...SECOES['U'] };
-}
-
-function formatarTempo(ms) {
-    const totalSegundos = Math.ceil(ms / 1000);
-    const min = String(Math.floor(totalSegundos / 60)).padStart(2, "0");
-    const seg = String(totalSegundos % 60).padStart(2, "0");
-    return `${min}:${seg}`;
-}
-
-
-function iniciarFila() {
-    const txt = document.getElementById("listaCNPJs").value;
-    fila = txt.split("\n").map(c => c.replace(/\D/g,"")).filter(c => c.length === 14);
-    if (!fila.length) return alert("Nenhum CNPJ válido.");
-    document.getElementById("btnConsultar").disabled = true;
-    document.getElementById("resultado").innerHTML = "";
-    consultar();
-    totalInicial = fila.length;
-document.getElementById("status-container").style.display = "block";
-atualizarProgresso();
-
-}
-
-function atualizarProgresso() {
-    const faltam = fila.length;
-    const processados = totalInicial - faltam;
-    const porcentagem = (processados / totalInicial) * 100;
-    const bar = document.getElementById("progress-bar-fill");
-    if(bar) bar.style.width = `${porcentagem}%`;
-    document.getElementById("tempo-restante").innerText = faltam > 0 ? formatarTempo(faltam * INTERVALO) : "Concluído!";
-}
-
-function consultar() {
-    if (!fila.length) {
-        document.getElementById("exportarBtn").disabled = false;
-        document.getElementById("btnConsultar").disabled = false;
-        return;
-    }
-
-    const cnpj = fila.shift();
-    const tr = document.createElement("tr");
-    tr.id = `row-${cnpj}`;
-    tr.innerHTML = `<td colspan="13" style="text-align:center; padding:15px;">Consultando ${cnpj}...</td>`;
-    document.getElementById("resultado").prepend(tr);
-
-    const cb = "cb_" + Math.random().toString(36).substr(2, 9);
-    
-    window[cb] = function(data) {
-        const row = document.getElementById(`row-${cnpj}`);
-    if (data.status === "OK") {
-        dadosExport.push(data);
-        
-        // --- LÓGICA DE COR DA SITUAÇÃO ---
-        let corSituacao = "var(--text-primary)"; 
-        const sit = data.situacao.toUpperCase();
-        
-        if (sit === "ATIVA") corSituacao = "var(--success)";
-        else if (sit === "BAIXADA") corSituacao = "var(--error)";
-        else if (sit === "SUSPENSA") corSituacao = "var(--warning-text)";
-        // --------------------------------
-
-        const sP = getSec(data.atividade_principal[0].code);
-        const htmlPrincipal = `<div class="cnae-col-main"><span class="pill" style="background:${sP.c}">SEÇÃO ${sP.l} | ${sP.n}</span><br><b>${data.atividade_principal[0].code}</b> - ${data.atividade_principal[0].text}</div>`;
-
-        let sMap = {};
-        data.atividades_secundarias?.forEach(a => {
-            const s = getSec(a.code);
-            if (!sMap[s.l]) sMap[s.l] = { n: s.n, items: [] };
-            sMap[s.l].items.push(a);
-        });
-
-        let htmlSec = `<div class="cnae-col-sec"><div class="secundario-list">`;
-        for (let l in sMap) {
-            htmlSec += `<span class="secao-header">SEÇÃO ${l} - ${sMap[l].n}</span>`;
-            sMap[l].items.forEach(a => htmlSec += `<div class="sec-item"><b>${a.code}</b> - ${a.text}</div>`);
-        }
-        htmlSec += `</div></div>`;
-
-        // CORREÇÃO AQUI: Substituímos "color:green" por "color:${corSituacao}"
-        row.innerHTML = `
-            <td>${data.cnpj}</td>
-            <td style="white-space:normal; min-width:200px;">${data.nome}</td>
-            <td>${data.fantasia || "-"}</td>
-            <td style="color:${corSituacao}; font-weight:700;">${data.situacao}</td>
-            <td>${data.porte || "-"}</td>
-            <td>${htmlPrincipal}</td>
-            <td>${htmlSec || "-"}</td>
-            <td>${data.municipio}/${data.uf}</td>
-            <td style="white-space:normal;">${data.qsa?.map(s => s.nome).join(", ") || "-"}</td>
-            <td>${data.email || "-"}</td>
-            <td>${data.telefone || "-"}</td>
-            <td>${data.abertura}</td>
-            <td>${data.ultima_atualizacao ? new Date(data.ultima_atualizacao).toLocaleDateString() : "-"}</td>
-            <td>${data.billing?.free ? "Grátis" : "Paga"}</td>`;
-    } else {
-        dadosExport.push({ cnpj: cnpj, nome: "ERRO NA CONSULTA (Limite ou CNPJ Inválido)", status: "ERROR" });
-        row.innerHTML = `<td colspan="13" style="color:red">Erro no CNPJ ${cnpj}</td>`;
-    }        
-    atualizarProgresso();
-    setTimeout(consultar, INTERVALO);
-    };
-
-    const s = document.createElement("script");
-    s.src = `https://receitaws.com.br/v1/cnpj/${cnpj}?callback=${cb}`;
-    document.body.appendChild(s);
-}
-
-function exportarExcel() {
-    // Cabeçalho com as novas colunas de Seção Equivalente
-    let csv = "\ufeffCNPJ;Nome Empresarial;Nome Fantasia;Situação;Porte;CNAE Principal;Seção Principal Equivalente;CNAE Secundários;Seções Secundárias Equivalentes;Município;UF;Sócios;E-mail;Telefone;Abertura;Última Atualiz;Billing\n";
-    
-    dadosExport.forEach(d => {
-        // --- Processamento do CNAE Principal ---
-        if (d.status === "ERROR") {
-            const rowErro = [d.cnpj, d.nome, "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
-            csv += rowErro.map(v => `"${v}"`).join(";") + "\n";
-            return; // Pula para o próximo item
+      function getSec(cnae) {
+        // Verifica se o CNAE é nulo, vazio ou o código de "Não Informada"
+        if (
+          !cnae ||
+          cnae.includes("00.00-0-00") ||
+          cnae.toLowerCase().includes("não informada")
+        ) {
+          return { l: "X", n: "NÃO INFORMADA", c: "#8E8E93" };
         }
 
-        const pCnae = (d.atividade_principal && d.atividade_principal[0] && d.atividade_principal[0].code !== "00.00-0-00") 
-            ? d.atividade_principal[0] 
-            : { code: "00.00-0-00", text: "Não informada" };
-        
-        const sP = getSec(pCnae.code);
-        // Formato solicitado: SEÇÃO C - Indústria de Transformação | 33.21-0-00 - Descrição
-        const secaoPrincipalStr = pCnae.code !== "00.00-0-00" 
-            ? `SEÇÃO ${sP.l} - ${sP.n} | ${pCnae.code} - ${pCnae.text}`
-            : "00.00-0-00 Não informada";
+        const d = parseInt(cnae.replace(/\D/g, "").substring(0, 2));
+        if (isNaN(d)) return { l: "?", n: "NÃO INFORMADA", c: "#8E8E93" };
 
-        // --- Processamento dos CNAEs Secundários ---
-        let sMap = {};
-        d.atividades_secundarias?.forEach(a => {
-            if(a.code && a.code !== "00.00-0-00") {
-                const s = getSec(a.code);
-                if (!sMap[s.l]) sMap[s.l] = { n: s.n, items: [] };
-                sMap[s.l].items.push(`${a.code} - ${a.text}`);
+        if (d <= 3) return { l: "A", ...SECOES["A"] };
+        if (d <= 9) return { l: "B", ...SECOES["B"] };
+        if (d <= 33) return { l: "C", ...SECOES["C"] };
+        if (d <= 35) return { l: "D", ...SECOES["D"] };
+        if (d <= 39) return { l: "E", ...SECOES["E"] };
+        if (d <= 43) return { l: "F", ...SECOES["F"] };
+        if (d <= 47) return { l: "G", ...SECOES["G"] };
+        if (d <= 53) return { l: "H", ...SECOES["H"] };
+        if (d <= 56) return { l: "I", ...SECOES["I"] };
+        if (d <= 63) return { l: "J", ...SECOES["J"] };
+        if (d <= 66) return { l: "K", ...SECOES["K"] };
+        if (d <= 68) return { l: "L", ...SECOES["L"] };
+        if (d <= 75) return { l: "M", ...SECOES["M"] };
+        if (d <= 82) return { l: "N", ...SECOES["N"] };
+        if (d <= 84) return { l: "O", ...SECOES["O"] };
+        if (d <= 85) return { l: "P", ...SECOES["P"] };
+        if (d <= 88) return { l: "Q", ...SECOES["Q"] };
+        if (d <= 93) return { l: "R", ...SECOES["R"] };
+        if (d <= 96) return { l: "S", ...SECOES["S"] };
+        if (d <= 97) return { l: "T", ...SECOES["T"] };
+        return { l: "U", ...SECOES["U"] };
+      }
+
+      function formatarTempo(ms) {
+        const totalSegundos = Math.ceil(ms / 1000);
+        const min = String(Math.floor(totalSegundos / 60)).padStart(2, "0");
+        const seg = String(totalSegundos % 60).padStart(2, "0");
+        return `${min}:${seg}`;
+      }
+
+      function iniciarFila() {
+        const txt = document.getElementById("listaCNPJs").value;
+        // Agora aceita qualquer linha preenchida, apenas limpando espaços em branco
+        fila = txt
+          .split("\n")
+          .map((c) => c.trim())
+          .filter((c) => c.length > 0);
+
+        if (!fila.length)
+          return alert("Por favor, insira ao menos um item para consulta.");
+
+        document.getElementById("btnConsultar").disabled = true;
+        document.getElementById("resultado").innerHTML = "";
+        totalInicial = fila.length;
+        document.getElementById("status-container").style.display = "block";
+
+        atualizarProgresso();
+        consultar();
+      }
+
+      function atualizarProgresso() {
+        const faltam = fila.length;
+        const processados = totalInicial - faltam;
+        const porcentagem = (processados / totalInicial) * 100;
+        const bar = document.getElementById("progress-bar-fill");
+        if (bar) bar.style.width = `${porcentagem}%`;
+        document.getElementById("tempo-restante").innerText =
+          faltam > 0 ? formatarTempo(faltam * INTERVALO) : "Concluído!";
+      }
+
+      function consultar() {
+        if (!fila.length) {
+          document.getElementById("exportarBtn").disabled = false;
+          document.getElementById("btnConsultar").disabled = false;
+          return;
+        }
+
+        const cnpj = fila.shift();
+        const tr = document.createElement("tr");
+        tr.id = `row-${cnpj.replace(/\s+/g, "-")}`; // Previne IDs inválidos com espaços
+        tr.innerHTML = `<td colspan="13" style="text-align:center; padding:15px;">Consultando ${cnpj}...</td>`;
+        document.getElementById("resultado").prepend(tr);
+
+        const cb = "cb_" + Math.random().toString(36).substr(2, 9);
+
+        window[cb] = function (data) {
+          const row = document.getElementById(
+            `row-${cnpj.replace(/\s+/g, "-")}`,
+          );
+
+          if (data.status === "OK") {
+            dadosExport.push(data);
+
+            // --- LÓGICA DE COR DA SITUAÇÃO ---
+            let corSituacao = "var(--text-primary)";
+            const sit = data.situacao.toUpperCase();
+
+            if (sit === "ATIVA") corSituacao = "var(--success)";
+            else if (sit === "BAIXADA") corSituacao = "var(--error)";
+            else if (sit === "SUSPENSA") corSituacao = "var(--warning-text)";
+            // --------------------------------
+
+            const sP = getSec(data.atividade_principal[0].code);
+            const htmlPrincipal = `<div class="cnae-col-main"><span class="pill" style="background:${sP.c}">SEÇÃO ${sP.l} | ${sP.n}</span><br><b>${data.atividade_principal[0].code}</b> - ${data.atividade_principal[0].text}</div>`;
+
+            let sMap = {};
+            data.atividades_secundarias?.forEach((a) => {
+              const s = getSec(a.code);
+              if (!sMap[s.l]) sMap[s.l] = { n: s.n, items: [] };
+              sMap[s.l].items.push(a);
+            });
+
+            let htmlSec = `<div class="cnae-col-sec"><div class="secundario-list">`;
+            for (let l in sMap) {
+              htmlSec += `<span class="secao-header">SEÇÃO ${l} - ${sMap[l].n}</span>`;
+              sMap[l].items.forEach(
+                (a) =>
+                  (htmlSec += `<div class="sec-item"><b>${a.code}</b> - ${a.text}</div>`),
+              );
             }
-        });
+            htmlSec += `</div></div>`;
 
-        // Agrupa por seção seguindo o formato: SEÇÃO C - Indústria | CNAE 1, CNAE 2
-        let secoesSecundariasStr = "";
-        const secoesKeys = Object.keys(sMap);
-        if (secoesKeys.length > 0) {
-            secoesSecundariasStr = secoesKeys.map(l => {
+            row.innerHTML = `
+                <td>${data.cnpj}</td>
+                <td style="white-space:normal; min-width:200px;">${data.nome}</td>
+                <td>${data.fantasia || "-"}</td>
+                <td style="color:${corSituacao}; font-weight:700;">${data.situacao}</td>
+                <td>${data.porte || "-"}</td>
+                <td>${htmlPrincipal}</td>
+                <td>${htmlSec || "-"}</td>
+                <td>${data.municipio}/${data.uf}</td>
+                <td style="white-space:normal;">${data.qsa?.map((s) => s.nome).join(", ") || "-"}</td>
+                <td>${data.email || "-"}</td>
+                <td>${data.telefone || "-"}</td>
+                <td>${data.abertura}</td>
+                <td>${data.ultima_atualizacao ? new Date(data.ultima_atualizacao).toLocaleDateString() : "-"}</td>
+                <td>${data.billing?.free ? "Grátis" : "Paga"}</td>`;
+          } else {
+            // Agora registra qualquer item que falhou (texto inválido, CNPJ mal formado ou erro de API)
+            dadosExport.push({
+              cnpj: cnpj,
+              nome: "ITEM INVÁLIDO OU ERRO DE CONSULTA",
+              status: "ERROR",
+              situacao: "ERRO",
+              email: "-",
+              telefone: "-",
+              porte: "-",
+            });
+
+            row.innerHTML = `
+                <td>${cnpj}</td>
+                <td colspan="12" style="color:var(--error); font-weight:bold; text-align:center;">
+                    ERRO NA CONSULTA (Limite API atingido ou CNPJ Inválido)
+                </td>`;
+          }
+          atualizarProgresso();
+          setTimeout(consultar, INTERVALO);
+        };
+
+        const s = document.createElement("script");
+        // Se o item não for um número puro, a URL pode falhar, o que acionará o fluxo de erro acima
+        s.src = `https://receitaws.com.br/v1/cnpj/${cnpj.replace(/\D/g, "")}?callback=${cb}`;
+
+        // Tratamento para casos onde o script nem consegue carregar (URL inválida por causa do texto)
+        s.onerror = () => {
+          window[cb]({ status: "ERROR", message: "URL Inválida" });
+        };
+
+        document.body.appendChild(s);
+      }
+
+      function exportarExcel() {
+        // Cabeçalho com as novas colunas de Seção Equivalente
+        let csv =
+          "\ufeffCNPJ;Nome Empresarial;Nome Fantasia;Situação;Porte;CNAE Principal;Seção Principal Equivalente;CNAE Secundários;Seções Secundárias Equivalentes;Município;UF;Sócios;E-mail;Telefone;Abertura;Última Atualiz;Billing\n";
+
+        dadosExport.forEach((d) => {
+          // --- Processamento do CNAE Principal ---
+          if (d.status === "ERROR") {
+            const rowErro = [
+              d.cnpj,
+              d.nome,
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+            ];
+            csv += rowErro.map((v) => `"${v}"`).join(";") + "\n";
+            return; // Pula para o próximo item
+          }
+
+          const pCnae =
+            d.atividade_principal &&
+            d.atividade_principal[0] &&
+            d.atividade_principal[0].code !== "00.00-0-00"
+              ? d.atividade_principal[0]
+              : { code: "00.00-0-00", text: "Não informada" };
+
+          const sP = getSec(pCnae.code);
+          // Formato solicitado: SEÇÃO C - Indústria de Transformação | 33.21-0-00 - Descrição
+          const secaoPrincipalStr =
+            pCnae.code !== "00.00-0-00"
+              ? `SEÇÃO ${sP.l} - ${sP.n} | ${pCnae.code} - ${pCnae.text}`
+              : "00.00-0-00 Não informada";
+
+          // --- Processamento dos CNAEs Secundários ---
+          let sMap = {};
+          d.atividades_secundarias?.forEach((a) => {
+            if (a.code && a.code !== "00.00-0-00") {
+              const s = getSec(a.code);
+              if (!sMap[s.l]) sMap[s.l] = { n: s.n, items: [] };
+              sMap[s.l].items.push(`${a.code} - ${a.text}`);
+            }
+          });
+
+          // Agrupa por seção seguindo o formato: SEÇÃO C - Indústria | CNAE 1, CNAE 2
+          let secoesSecundariasStr = "";
+          const secoesKeys = Object.keys(sMap);
+          if (secoesKeys.length > 0) {
+            secoesSecundariasStr = secoesKeys
+              .map((l) => {
                 return `SEÇÃO ${l} - ${sMap[l].n} | ${sMap[l].items.join(", ")}`;
-            }).join(" | ");
-        } else {
+              })
+              .join(" | ");
+          } else {
             secoesSecundariasStr = "00.00-0-00 Não informada";
-        }
+          }
 
-        const row = [
-            d.cnpj, 
-            d.nome, 
-            d.fantasia || "", 
+          const row = [
+            d.cnpj,
+            d.nome,
+            d.fantasia || "",
             d.situacao,
             d.porte || "",
             `${pCnae.code} - ${pCnae.text}`,
             secaoPrincipalStr, // Coluna Adicional 1
-            d.atividades_secundarias?.map(a => `${a.code}: ${a.text}`).join(" | ") || "Não informada",
+            d.atividades_secundarias
+              ?.map((a) => `${a.code}: ${a.text}`)
+              .join(" | ") || "Não informada",
             secoesSecundariasStr, // Coluna Adicional 2
-            d.municipio, 
-            d.uf, 
-            d.qsa?.map(s => s.nome).join(" / ") || "-", 
-            d.email, 
-            d.telefone, 
-            d.abertura, 
-            d.ultima_atualizacao, 
-            d.billing?.free ? "Grátis" : "Paga"
-        ];
-        
-        csv += row.map(v => `"${(v || "").toString().replace(/"/g, '""')}"`).join(";") + "\n";
-    });
+            d.municipio,
+            d.uf,
+            d.qsa?.map((s) => s.nome).join(" / ") || "-",
+            d.email,
+            d.telefone,
+            d.abertura,
+            d.ultima_atualizacao,
+            d.billing?.free ? "Grátis" : "Paga",
+          ];
 
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `relatorio_unides_secoes_${new Date().getTime()}.csv`;
-    link.click();
-}
+          csv +=
+            row
+              .map((v) => `"${(v || "").toString().replace(/"/g, '""')}"`)
+              .join(";") + "\n";
+        });
 
-function exportarPipefy() {
-    if (dadosExport.length === 0) return alert("Não há dados para exportar.");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `relatorio_unides_secoes_${new Date().getTime()}.csv`;
+        link.click();
+      }
 
-    // Cabeçalho específico conforme solicitado
-    let csv = "\ufeffCNPJ;Nome Empresarial;E-mail;Telefone;Porte\n";
+      function exportarPipefy() {
+        if (dadosExport.length === 0)
+          return alert("Não há dados para exportar.");
 
-    dadosExport.forEach(d => {
+        // Cabeçalho específico conforme solicitado
+        let csv = "\ufeffCNPJ;Nome Empresarial;E-mail;Telefone;Porte\n";
 
-        if (d.status === "ERROR") {
+        dadosExport.forEach((d) => {
+          if (d.status === "ERROR") {
             const rowErro = [d.cnpj, d.nome, "-", "-", "-"];
-            csv += rowErro.map(v => `"${v}"`).join(";") + "\n";
+            csv += rowErro.map((v) => `"${v}"`).join(";") + "\n";
             return;
-        }
+          }
 
-        const row = [
+          const row = [
             d.cnpj,
             d.nome,
             d.email || "-",
             d.telefone || "-",
-            d.porte || "-"
-        ];
-        csv += row.map(v => `"${(v || "").toString().replace(/"/g, '""')}"`).join(";") + "\n";
-    });
+            d.porte || "-",
+          ];
+          csv +=
+            row
+              .map((v) => `"${(v || "").toString().replace(/"/g, '""')}"`)
+              .join(";") + "\n";
+        });
 
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `modelo_pipefy_${new Date().getTime()}.csv`;
-    link.click();
-}
-
-</script>
-
-</body>
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `modelo_pipefy_${new Date().getTime()}.csv`;
+        link.click();
+      }
+    </script>
+  </body>
 </html>
