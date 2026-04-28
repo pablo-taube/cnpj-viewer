@@ -359,6 +359,7 @@
                 <th>Porte</th>
                 <th>CNAE Principal</th>
                 <th>CNAE Secundários</th>
+                <th>Natureza Jurídica</th>
                 <th>Município/UF</th>
                 <th>Sócio Resp.</th>
                 <th>E-mail</th>
@@ -545,6 +546,7 @@
                 <td>${data.porte || "-"}</td>
                 <td>${htmlPrincipal}</td>
                 <td>${htmlSec || "-"}</td>
+                <td>${data.natureza_juridica || "-"}</td>
                 <td>${data.municipio}/${data.uf}</td>
                 <td style="white-space:normal;">${data.qsa?.map((s) => s.nome).join(", ") || "-"}</td>
                 <td>${data.email || "-"}</td>
@@ -589,7 +591,7 @@
       function exportarExcel() {
         // Cabeçalho com as novas colunas de Seção Equivalente
         let csv =
-          "\ufeffCNPJ;Nome Empresarial;Nome Fantasia;Situação;Porte;CNAE Principal;Seção Principal Equivalente;CNAE Secundários;Seções Secundárias Equivalentes;Município;UF;Sócios;E-mail;Telefone;Abertura;Última Atualiz;Billing\n";
+          "\ufeffCNPJ;Nome Empresarial;Nome Fantasia;Situação;Porte;CNAE Principal;Seção Principal Equivalente;CNAE Secundários;Seções Secundárias Equivalentes;Natureza Jurídica;Município;UF;Sócios;E-mail;Telefone;Abertura;Última Atualiz;Billing\n";
 
         dadosExport.forEach((d) => {
           // --- Processamento do CNAE Principal ---
@@ -666,6 +668,7 @@
               ?.map((a) => `${a.code}: ${a.text}`)
               .join(" | ") || "Não informada",
             secoesSecundariasStr, // Coluna Adicional 2
+            d.natureza_juridica || "-",
             d.municipio,
             d.uf,
             d.qsa?.map((s) => s.nome).join(" / ") || "-",
